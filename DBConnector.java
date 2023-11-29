@@ -15,11 +15,11 @@ import java.util.ArrayList;
 public class DBConnector {
 
     // enter your user name here
-    protected static String user = "";
+    protected static String user = "pizzadb";
     // enter your password here
-    protected static String password = "";
+    protected static String password = "pizzadb1";
     // enter your database name here
-    private static String database_name = "";
+    private static String database_name = "pizzadb";
     // Do not change the port. 3306 is the default MySQL port
     private static String url = "";
     private static Connection conn;
