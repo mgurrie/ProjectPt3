@@ -5,8 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import cpsc4620.DBConnector;
-import cpsc4620.Pizza;
+import cpsc4620.DBNinja;
 
 public class TestMain {
 
@@ -21,19 +20,17 @@ public class TestMain {
     }
     
     // select data from database
-    //printPizzas();
+    printPizzas();
 
-    /* 
     // modify data in the database
     Pizza p = new Pizza(1, "large", "thin", 1, "ready", "Jan 1, 2020",
 			10.55, 5.30);
-    insertPizza(p);
+    DBNinja.addPizza(p);
+
     printPizzas();
 
     deletePizza(p);
     printPizzas();
-
-    */
 
     // disconnect from the database
     try {
@@ -44,7 +41,6 @@ public class TestMain {
     }
   }
 
-  /* 
 
   public static void printPizzas() {
     try (Statement statement = connection.createStatement();
@@ -73,7 +69,6 @@ public class TestMain {
     }
   }
 
-
   public static void insertPizza(Pizza p) {
     String insertPizza =
         "INSERT INTO Pizzeria.pizza (PizzaID, PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
@@ -101,7 +96,7 @@ public class TestMain {
   }
 
   private static void deletePizza(Pizza p) {
-    String deletePizza = "DELETE FROM Pizzeria.pizza " + "WHERE Code = ?";
+    String deletePizza = "DELETE FROM Pizzeria.pizza " + "WHERE PizzaID = ?";
 
     try (PreparedStatement ps = connection.prepareStatement(deletePizza)) {
       System.out.println("Delete test: ");
@@ -116,6 +111,5 @@ public class TestMain {
     }
   }
 
-  */
 
 }
