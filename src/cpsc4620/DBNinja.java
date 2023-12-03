@@ -42,8 +42,6 @@ public final class DBNinja {
 	public final static String crust_pan = "Pan";
 	public final static String crust_gf = "Gluten-Free";
 
-
-
 	
 	private static boolean connect_to_db() throws SQLException, IOException {
 
@@ -84,11 +82,32 @@ public final class DBNinja {
 		 * 
 		 */
 		
-		
-		
-		
+		String insertPizza =
+		 "INSERT INTO Pizzeria.pizza (PizzaID, PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
+		 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
+		System.out.println("Insert test: ");
+	
+		ps.setInt(1, p.getPizzaID());
+		ps.setString(2, p.getSize());
+		ps.setString(3, p.getPizzaState());
+		ps.setDouble(4, p.getCustPrice());
+		ps.setDouble(5, p.getBusPrice());
+		ps.setString(6, p.getCrustType());
+		ps.setString(7, p.getPizzaDate());
+		ps.setInt(8, p.getOrderID());
+		ps.executeUpdate();
+	
+		System.out.println(p.toString());
+		System.out.println();
+	
+		} catch (SQLException e) {
+		System.out.println(e);
+		}
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	
@@ -626,5 +645,11 @@ public final class DBNinja {
 		}
 	}
 
+	// JENNY ADDED
+	public static void main(String args[]) throws IOException, SQLException{
+		Pizza p = new Pizza(1, "large", "thin", 1, "ready", "Jan 1, 2020",
+			10.55, 5.30);
+    	addPizza(p);
+	}
 
 }
