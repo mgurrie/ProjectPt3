@@ -236,15 +236,33 @@ public final class DBNinja {
 		 * return them in an arrayList of discounts.
 		 * 
 		*/
-		
-		
-		
-		
-		
-		
-		
+		try {
+
+			String disc = "Select DiscountID, DiscountName, DiscountValue, DiscountIsPercent From discount;";
+			Statement ready1 = conn.createStatement();
+			PreparedStatement ready = conn.prepareStatement(disc);
+
+			ResultSet returnQ = ready.executeQuery();
+
+			while (returnQ.next()) {
+				int id = returnQ.getInt(1);
+				String name = returnQ.getString(2);
+				double value = returnQ.getDouble(3);
+				boolean percent = returnQ.getBoolean(4);
+
+				discount.add(new Discount(id, name, value, percent));
+			}
+		} catch (SQLException error) {
+			System.out.println("Error getting all discount");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		conn.close();
+		return discount;
 	}
 
 	public static Discount findDiscountByName(String name){
@@ -269,15 +287,30 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		*/
+		/*
+		 * return an arrayList of all the customers. These customers should
+		 *print in alphabetical order, so account for that as you see fit.
+		*/
+		try {
+			String cust = "Select CustomerID, CustomerFname, CustomerLname, CustomerPhone From customer where CustomerID != 0;";
+			PreparedStatement ready = conn.prepareStatement(cust);
+			ResultSet returnQ = ready.executeQuery(cust);
 
+			while (returnQ.next()) {
+				customer.add(new Customer(returnQ.getInt(1), returnQ.getString(2), returnQ.getString(3), returnQ.getString(4)));
+			}
+		} 
+		catch (SQLException error) {
+			System.out.println("Error getting all customer");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
 
-		
-		
-		
-		
-		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		conn.close();
+		return customer;
 	}
 
 	public static Customer findCustomerByPhone(String phoneNumber){
@@ -287,12 +320,28 @@ public final class DBNinja {
 		 * If it's not found....then return null
 		 *  
 		 */
-		
+		connect_to_db();
+		String customerFound = "";
 
+		try {
 
+			String customer = "Select CustomerFName, CustomerLName FROM customer WHERE CustomerPhone = " + phoneNumber + ";";
+			Statement ready = conn.createStatement();
+			ResultSet returnQ = ready.executeQuery(customer);
 
+			while (returnQ.next()) {
+				ret = returnQ.getString(1) + " " + returnQ.getString(2);
+			}
+		} catch (SQLException error) {
+			System.out.println("Error getting customer name");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
 
-		 return null;
+		conn.close();
+		return customerFound;
 	}
 
 
@@ -305,15 +354,26 @@ public final class DBNinja {
 		 * 
 		 */
 
-		
+				try {
+			String topp = "Select ToppingName, ToppingKey FROM topping;";
+			PreparedStatement ready = conn.prepareStatement(cust);
+			ResultSet returnQ = ready.executeQuery(cust);
 
-		
-		
-		
-		
-		
+			while (returnQ.next()) {
+				toppings.add(new Toppings(returnQ.getInt(1), returnQ.getString(2), returnQ.getString(3), returnQ.getString(4)));
+			}
+		} 
+		catch (SQLException error) {
+			System.out.println("Error getting all customers");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		conn.close();
+		return customer;
 	}
 
 	public static Topping findToppingByName(String name){
@@ -323,14 +383,32 @@ public final class DBNinja {
 		 * If it's not found....then return null
 		 *  
 		 */
-		
+		connect_to_db();
+		Topping toppingFound = null;
 
+		try {
 
+			String topping = "Select * FROM topping WHERE ToppingName = " + name + ";";
+			Statement ready = conn.createStatement();
+			ResultSet returnQ = ready.executeQuery(topping);
 
+			if (returnQ.next()) {
+				toppingFound = new Topping(
+						returnQ.getInt("ToppingID")
+				);
+			}
 
-		 return null;
+		} catch (SQLException error) {
+			System.out.println("Error getting customer name");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		conn.close();
+		return toppingFound;
 	}
-
 
 	public static void addToInventory(Topping t, double quantity) throws SQLException, IOException {
 		connect_to_db();
