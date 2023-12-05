@@ -208,14 +208,99 @@ public final class DBNinja {
 		 * Ideally, you should't let toppings go negative....but this should be dealt with BEFORE calling this method.
 		 * 
 		 */
+
+		// store values for inventory change amt
+		double toppingToRemove = 0;
+		String pizzaSize = p.getSize();
+		if(pizzaSize.toLowerCase().equals("small"))
+			toppingToRemove = t.getPerAMT();
+		else if (pizzaSize.toLowerCase().equals("medium"))
+			toppingToRemove = t.getMedAMT();
+		else if (pizzaSize.toLowerCase().equals("large"))
+			toppingToRemove = t.getLgAMT();
+		else if (pizzaSize.toLowerCase().equals("xlarge"))
+			toppingToRemove = t.getXLAMT();
+		//add extra topping amount
+		int extraTopping = 0;
+		if(isDoubled) {
+			extraTopping = 1;
+			toppingToRemove = toppingToRemove * 2;
+		}
+
+
+		// get current topping inv
+		double prevInv = 0;
+		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
+		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {
+			System.out.println("Get ToppingInv test: ");
 		
+			ps.setInt(1, t.getTopID());
+			
+			try (ResultSet rs = ps.executeQuery()) {
+                // Check if there are results
+                if (rs.next()) {
+                    // Retrieve the value from the result set
+                    prevInv = rs.getDouble("ToppingInv");
+
+                    // Use the retrieved value
+                    System.out.println("Retrieved value: " + prevInv);
+                } else {
+                    System.out.println("No matching records found.");
+                }
+            }
 		
+			System.out.println("complete");
+			System.out.println();
+	
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 		
+
+		// update topping inventory from topping t based on pizza size from pizza p
+		String update =
+		 "UPDATE Pizzeria.topping " + 
+		 "SET ToppingInv = (?) - (?)" +
+		 "WHERE ToppingKey = (?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(update)) {
+			System.out.println("update inv test: ");
 		
+			ps.setDouble(1, prevInv);
+			ps.setDouble(2, toppingToRemove);
+			ps.setInt(3, t.getTopID());
+			ps.executeUpdate();
 		
+			System.out.println(t.toString());
+			System.out.println();
+	
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+
 		
+		// insert topping_pizza table withj pizzaID and toppingKey
+		String insertToppingPizza =
+         "INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra) " + 
+         "VALUES (?, ?, ?)";
+ 
+        try (PreparedStatement ps = conn.prepareStatement(insertToppingPizza)) {
+			System.out.println("Insert toppingpizza test: ");
+		
+			ps.setInt(1, t.getTopID());
+			ps.setInt(2, p.getPizzaID());
+			ps.setInt(3, extraTopping);
+			ps.executeUpdate();
+		
+			System.out.println("complete toppingpizza " + extraTopping);
+			System.out.println();
+    
+        } catch (SQLException e) {
+        	System.out.println(e);
+        }
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	
@@ -290,15 +375,28 @@ public final class DBNinja {
 		 * Find the specifed order in the database and mark that order as complete in the database.
 		 * 
 		 */
-		
 
-
+		String updateOrderComplete =
+		 "UPDATE Pizzeria.order " + 
+		 "SET OrderCompletion = (?) " +
+		 "WHERE OrderNum = (?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(updateOrderComplete)) {
+			System.out.println("Update order completion test: ");
 		
+			ps.setInt(1, 1);
+			ps.setInt(2, o.getOrderID());
+			ps.executeUpdate();
 		
-		
-		
+			System.out.println("complete");
+			System.out.println();
+	
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 
@@ -616,13 +714,58 @@ public final class DBNinja {
 		 * 
 		 * */
 
+		// get prev topping inv
+		double prevInv = 0;
 
+		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
+		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {
+			System.out.println("Get ToppingInv test: ");
 		
+			ps.setInt(1, t.getTopID());
+			
+			try (ResultSet rs = ps.executeQuery()) {
+                // Check if there are results
+                if (rs.next()) {
+                    // Retrieve the value from the result set
+                    prevInv = rs.getDouble("ToppingInv");
+
+                    // Use the retrieved value
+                    System.out.println("Retrieved value: " + prevInv);
+                } else {
+                    System.out.println("No matching records found.");
+                }
+            }
 		
+			System.out.println("complete");
+			System.out.println();
+	
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+
+		// update topping
+		String updateToppingQty =
+		 "UPDATE Pizzeria.topping " + 
+		 "SET ToppingInv = (?) + (?) " +
+		 "WHERE ToppingKey = (?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(updateToppingQty)) {
+			System.out.println("Update test: ");
 		
+			ps.setDouble(1, quantity);
+			ps.setDouble(2, prevInv);
+			ps.setInt(3, t.getTopID());
+			ps.executeUpdate();
 		
+			System.out.println("complete");
+			System.out.println();
+	
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
@@ -869,22 +1012,29 @@ public final class DBNinja {
 	public static void main(String args[]) throws IOException, SQLException{
 
 		// -- test add pizza --
-		/* 
-		Pizza p = new Pizza(1, "large", "thin", 1, "ready", "Jan 1, 2020",
-			10.55, 5.30);
+		Pizza p = new Pizza(2, "small", "gluten-free", 1, "ready", "Jul 3, 2022",
+			16.55, 10.55);
     	addPizza(p);
-		*/
 
 		// -- test add customer --
-		Customer c = new Customer(1, "fname", "lname", "1234567891");
+		/*Customer c = new Customer(1, "fname", "lname", "1234567891");
 		c.setAddress("11 cochran rd", "city", "state", "29631");
-		addCustomer(c);
+		addCustomer(c);*/
 
 		// -- test add order --
-		Order o = new Order(1, 1, "pickup", "2010-05-12", 12.14, 5.16, 1);
-		addOrder(o);
+		//Order o = new Order(3, 1, "delivery", "2020-10-10", 15.23, 58.36, 0);
+		//addOrder(o);
 
+		// -- test addToInv --
+		Topping t = new Topping(2, "Cheese", 3.20, 4.20, 5.20, 6.20,
+			5.20, 2.21, 1, 20);
+		//addToInventory(t, 10);
 
+		// test update order completion
+		//completeOrder(o);
+
+		// -- test use topping --
+		useTopping(p, t, true);
 	}
 
 }
