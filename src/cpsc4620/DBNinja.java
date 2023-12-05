@@ -554,7 +554,7 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		 */
-	ArrayList<Topping> toppings = new ArrayList<>();
+			ArrayList<Topping> toppings = new ArrayList<>();
 			try {
 			String topp = "Select ToppingName, ToppingKey FROM topping;";
 			PreparedStatement ready = conn.prepareStatement(topp);
@@ -565,7 +565,7 @@ public final class DBNinja {
 			}
 		} 
 		catch (SQLException error) {
-			System.out.println("Error getting all customers");
+			System.out.println("Error getting all toppings");
 			while (error != null) {
 				System.out.println("Message     : " + error.getMessage());
 				error = error.getNextException();
