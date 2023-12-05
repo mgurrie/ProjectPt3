@@ -479,7 +479,7 @@ public final class DBNinja {
 			ResultSet returnQ = prep_selInv.executeQuery();
 			ResultSet topUnit;
 
-			while (queryReturn.next()) {
+			while (returnQ.next()) {
 				int orderNum = returnQ.getInt(1);
 				String orderType = returnQ.getNString(2);
 				int orderCompleted = returnQ.getDouble(3);
@@ -513,6 +513,7 @@ public final class DBNinja {
 		 * return them in an arrayList of discounts.
 		 * 
 		*/
+		ArrayList<Discount> discount = new ArrayList<>();
 		try {
 
 			String disc = "Select DiscountID, DiscountName, DiscountValue, DiscountIsPercent From discount;";
@@ -588,6 +589,7 @@ public final class DBNinja {
 		 * return an arrayList of all the customers. These customers should
 		 *print in alphabetical order, so account for that as you see fit.
 		*/
+		ArrayList<Customer> customer = new ArrayList<>();
 		try {
 			String cust = "Select CustomerID, CustomerFname, CustomerLname, CustomerPhone From customer where CustomerID != 0;";
 			PreparedStatement ready = conn.prepareStatement(cust);
@@ -618,7 +620,7 @@ public final class DBNinja {
 		 *  
 		 */
 		connect_to_db();
-		String customerFound = "";
+		Customer customerFound;
 
 		try {
 
@@ -627,7 +629,7 @@ public final class DBNinja {
 			ResultSet returnQ = ready.executeQuery(customer);
 
 			while (returnQ.next()) {
-				ret = returnQ.getString(1) + " " + returnQ.getString(2);
+				customerFound = returnQ.getString(1) + returnQ.getString(2);
 			}
 		} catch (SQLException error) {
 			System.out.println("Error getting customer name");
@@ -650,18 +652,18 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		 */
-
-				try {
+			ArrayList<Topping> toppings = new ArrayList<>();
+			try {
 			String topp = "Select ToppingName, ToppingKey FROM topping;";
-			PreparedStatement ready = conn.prepareStatement(cust);
-			ResultSet returnQ = ready.executeQuery(cust);
+			PreparedStatement ready = conn.prepareStatement(topp);
+			ResultSet returnQ = ready.executeQuery(topp);
 
 			while (returnQ.next()) {
-				toppings.add(new Toppings(returnQ.getInt(1), returnQ.getString(2), returnQ.getString(3), returnQ.getString(4)));
+				toppings.add(new Topping(returnQ.getInt(1), returnQ.getString(2), returnQ.getString(3), returnQ.getString(4)));
 			}
 		} 
 		catch (SQLException error) {
-			System.out.println("Error getting all customers");
+			System.out.println("Error getting all toppings");
 			while (error != null) {
 				System.out.println("Message     : " + error.getMessage());
 				error = error.getNextException();
@@ -670,7 +672,7 @@ public final class DBNinja {
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return customer;
+		return toppings;
 	}
 
 	public static Topping findToppingByName(String name){
@@ -778,7 +780,7 @@ public final class DBNinja {
 		
 		try {
 
-			String cost = "SELECT BaseCost FROM pizza_base WHERE BaseSize = ? and BaseCrust = ?;";
+			String cost = "SELECT BasePrice FROM pizza_base WHERE BaseSize = ? and BaseCrust = ?;";
 
 			PreparedStatement ready = conn.prepareStatement(cost);
 			ready.setString(1, size);
@@ -801,18 +803,20 @@ public final class DBNinja {
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
+		System.out.println(basePrice);
 		return basePrice;
 	}
 
 	public static double getBaseBusPrice(String size, String crust) throws SQLException, IOException {
 		connect_to_db();
+		double basePrice = 0.0;
 		/* 
 		 * Query the database fro the base business price for that size and crust pizza.
 		 * 
 		*/
 		try {
 
-			String cost = "SELECT BasePrice FROM pizza_base WHERE BaseSize = ? and BaseCrust = ?;";
+			String cost = "SELECT BaseCost FROM pizza_base WHERE BaseSize = ? and BaseCrust = ?;";
 
 			PreparedStatement ready = conn.prepareStatement(cost);
 			ready.setString(1, size);
@@ -1017,13 +1021,13 @@ public final class DBNinja {
     	addPizza(p);
 
 		// -- test add customer --
-		/*Customer c = new Customer(1, "fname", "lname", "1234567891");
-		c.setAddress("11 cochran rd", "city", "state", "29631");
-		addCustomer(c);*/
+		/*// Customer c = new Customer(1, "fname", "lname", "1234567891");
+		// c.setAddress("11 cochran rd", "city", "state", "29631");
+		// addCustomer(c);*/
 
-		// -- test add order --
-		//Order o = new Order(3, 1, "delivery", "2020-10-10", 15.23, 58.36, 0);
-		//addOrder(o);
+		// // -- test add order --
+		//// Order o = new Order(3, 1, "delivery", "2020-10-10", 15.23, 58.36, 0);
+		//// addOrder(o);
 
 		// -- test addToInv --
 		Topping t = new Topping(2, "Cheese", 3.20, 4.20, 5.20, 6.20,
