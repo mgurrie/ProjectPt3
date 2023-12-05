@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import textio.TextIO;
 
 /*
  * This file is where the front end magic happens.
@@ -170,23 +171,15 @@ public class Menu {
 	{
 		string fName;
 		string lName;
+		string line;
+		int phoneNumber;
 		System.out.println("What is this customer's name (first <space> last");
-		System.in(fName);
-		System.in(lName);
-		/*
-		 * Ask for the name of the customer:
-		 *   First Name <space> Last Name
-		 * 
-		 * Ask for the  phone number.
-		 *   (##########) (No dash/space)
-		 * 
-		 * Once you get the name and phone number, add it to the DB
-		 */
-		
-		// User Input Prompts...
-		 System.out.println("What is this customer's name (first <space> last");
-		 System.out.println("What is this customer's phone number (##########) (No dash/space)");
- 
+		line = TextIO.getln();
+        fName = input.substring(0, space);
+        lName = input.substring(space+1);
+		System.out.println("What is this customer's phone number (##########) (No dash/space)");
+		System.in(phoneNumber);
+		//ADD NUMBER TO THE DB 
 
 	}
 
