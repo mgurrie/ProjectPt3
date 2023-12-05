@@ -25,7 +25,7 @@ public class TestMain {
     // modify data in the database
     Pizza p = new Pizza(1, "large", "thin", 1, "ready", "Jan 1, 2020",
 			10.55, 5.30);
-    DBNinja.addPizza(p);
+    // DBNinja.addPizza(p);
 
     printPizzas();
 
