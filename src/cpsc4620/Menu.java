@@ -78,7 +78,38 @@ public class Menu {
 	// allow for a new order to be placed
 	public static void EnterOrder() throws SQLException, IOException 
 	{
+	int orderType;
+	char existingCus;
+	int IDNumber;
+	int tableNum; 
+	System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
+	System.in(orderType);
+	//	CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
+	if (orderType != 1 || orderType != 2 || orderType != 3){
+		System.out.println("ERROR: I don't understand your input for: 'Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:'");
+		System.in(orderType);
+	}
+	System.out.println("Is this order for an existing customer? Answer y/n: ");
+	System.in(existingCus);
+	// 	CHECK IF Y OR N IS ENTERED TO MOVE FORWARD
+	if (existingCus != 'y' || existingCus != 'n') {
+		System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
+		System.in(existingCus);
+	}
+	// IF EXISTING CUSTOMER IS TRUE 
+	else if (existingCus == 'y') {
+		System.out.println("Here's a list of the current customers: ");
+		viewCustomers();
+		System.out.println("Which customer is this order for? Enter ID Number:");
+		System.in(IDNumber);
+	}
+	if (orderType == 1){
+		System.out.println("What is the table number for this order?");
+		System.in(tableNum);
+	}
 
+	//call order constructor and enter the order data, 
+	//call pizza constructor 
 		/*
 		 * EnterOrder should do the following:
 		 * 
@@ -97,7 +128,7 @@ public class Menu {
 		 * 
 		 * make sure you use the prompts below in the correct order!
 		 */
-
+		
 		 // User Input Prompts...
 		System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 		System.out.println("Is this order for an existing customer? Answer y/n: ");
@@ -137,6 +168,11 @@ public class Menu {
 	// Enter a new customer in the database
 	public static void EnterCustomer() throws SQLException, IOException 
 	{
+		string fName;
+		string lName;
+		System.out.println("What is this customer's name (first <space> last");
+		System.in(fName);
+		System.in(lName);
 		/*
 		 * Ask for the name of the customer:
 		 *   First Name <space> Last Name
