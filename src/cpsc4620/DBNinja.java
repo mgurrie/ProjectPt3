@@ -2,6 +2,8 @@ package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
@@ -42,8 +44,6 @@ public final class DBNinja {
 	public final static String crust_pan = "Pan";
 	public final static String crust_gf = "Gluten-Free";
 
-
-
 	
 	private static boolean connect_to_db() throws SQLException, IOException {
 
@@ -68,10 +68,91 @@ public final class DBNinja {
 		 * the necessary data for the delivery, dinein, and pickup tables
 		 * 
 		 */
-	
 
-		
+		// order table
+		String insertOrder =
+		 "INSERT INTO Pizzeria.order (OrderNum, OrderType, OrderCompletion, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID) " + 
+		 "VALUES (?, ?, ?, ?, ?, ?, ?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(insertOrder)) {
+		System.out.println("Insert test: ");
+	
+		ps.setInt(1, o.getOrderID());
+		ps.setString(2, o.getOrderType());
+		ps.setInt(3, o.getIsComplete());
+		ps.setDate(4, java.sql.Date.valueOf(o.getDate()));
+		ps.setDouble(5, o.getBusPrice());
+		ps.setDouble(6, o.getCustPrice());
+		ps.setDouble(7, o.getCustID());
+		ps.executeUpdate();
+	
+		System.out.println("success order\n");
+		System.out.println();
+	
+		} catch (SQLException e) {
+		System.out.println(e);
+		}
+
+		String insertOrderType;
+		// update dine in table
+		if(Objects.equals(o.getOrderType(), "dinein")) {
+			insertOrderType =
+			"INSERT INTO Pizzeria.dinein (OrderNum, TableNum) " + 
+			"VALUES (?, ?)";
+
+			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
+			System.out.println(insertOrderType);
+
+			ps.setInt(1, o.getOrderID());
+			ps.executeUpdate();
+
+			System.out.println(Objects.equals(o.getOrderType(), "dinein"));
+
+			} catch (SQLException e) {
+			System.out.println(e);
+			}
+		}
+		// update pickup table
+		if(Objects.equals(o.getOrderType(), "pickup")) {
+			insertOrderType =
+			"INSERT INTO Pizzeria.pickup (OrderNum, CustomerID) " + 
+			"VALUES (?, ?)";
+
+			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
+			System.out.println(insertOrderType);
+
+			ps.setInt(1, o.getOrderID());
+			ps.setInt(2, o.getCustID());
+			ps.executeUpdate();
+
+			System.out.println(Objects.equals(o.getOrderType(), "pickup"));
+
+			} catch (SQLException e) {
+			System.out.println(e);
+			}
+		}
+		// update delivery table
+		if(Objects.equals(o.getOrderType(), "delivery")) {
+			insertOrderType =
+			"INSERT INTO Pizzeria.delivery (OrderNum, CustomerID) " + 
+			"VALUES (?, ?)";
+
+			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
+			System.out.println(insertOrderType);
+
+			ps.setInt(1, o.getOrderID());
+			ps.setInt(2, o.getCustID());
+			ps.executeUpdate();
+
+			System.out.println(Objects.equals(o.getOrderType(), "delivery"));
+
+			} catch (SQLException e) {
+			System.out.println(e);
+			}
+		}
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	public static void addPizza(Pizza p) throws SQLException, IOException
@@ -84,11 +165,34 @@ public final class DBNinja {
 		 * 
 		 */
 		
-		
-		
-		
+		String insertPizza =
+		 "INSERT INTO Pizzeria.pizza (PizzaID, PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
+		 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
+		System.out.println("Insert test: ");
+
+		// use pizza discount
+	
+		ps.setInt(1, p.getPizzaID());
+		ps.setString(2, p.getSize());
+		ps.setString(3, p.getPizzaState());
+		ps.setDouble(4, p.getCustPrice());
+		ps.setDouble(5, p.getBusPrice());
+		ps.setString(6, p.getCrustType());
+		ps.setString(7, p.getPizzaDate());
+		ps.setInt(8, p.getOrderID());
+		ps.executeUpdate();
+	
+		System.out.println(p.toString());
+		System.out.println();
+	
+		} catch (SQLException e) {
+		System.out.println(e);
+		}
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	
@@ -155,11 +259,29 @@ public final class DBNinja {
 		 * 
 		 */
 				
-		
-		
-		
+		String insertCustomer =
+		 "INSERT INTO Pizzeria.customer (CustomerID, CustomerFName, CustomerLName, CustomerPhone, CustomerAddr) " + 
+		 "VALUES (?, ?, ?, ?, ?)";
+ 
+		try (PreparedStatement ps = conn.prepareStatement(insertCustomer)) {
+		System.out.println("Insert test: ");
+	
+		ps.setInt(1, c.getCustID());
+		ps.setString(2, c.getFName());
+		ps.setString(3, c.getLName());
+		ps.setString(4, c.getPhone());
+		ps.setString(5, c.getAddress());
+		ps.executeUpdate();
+	
+		System.out.println(c.toString());
+		System.out.println();
+	
+		} catch (SQLException e) {
+		System.out.println(e);
+		}
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void completeOrder(Order o) throws SQLException, IOException {
@@ -743,5 +865,26 @@ public final class DBNinja {
 		}
 	}
 
+	// JENNY ADDED
+	public static void main(String args[]) throws IOException, SQLException{
+
+		// -- test add pizza --
+		/* 
+		Pizza p = new Pizza(1, "large", "thin", 1, "ready", "Jan 1, 2020",
+			10.55, 5.30);
+    	addPizza(p);
+		*/
+
+		// -- test add customer --
+		Customer c = new Customer(1, "fname", "lname", "1234567891");
+		c.setAddress("11 cochran rd", "city", "state", "29631");
+		addCustomer(c);
+
+		// -- test add order --
+		Order o = new Order(1, 1, "pickup", "2010-05-12", 12.14, 5.16, 1);
+		addOrder(o);
+
+
+	}
 
 }

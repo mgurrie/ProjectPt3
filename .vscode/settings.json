@@ -1,0 +1,7 @@
+{
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/Users/jennyhsu/Desktop/2023fall/cpsc4620/mysql-connector-j-8.2.0/mysql-connector-j-8.2.0.jar"
+    ]
+}
