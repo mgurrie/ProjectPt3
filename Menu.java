@@ -84,6 +84,7 @@ public class Menu {
 	int IDNumber;
 	int tableNum; 
 	int pizzaAdd;
+	char isDiscount;
 	System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 	System.in(orderType);
 	//	CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
@@ -91,6 +92,12 @@ public class Menu {
 		System.out.println("ERROR: I don't understand your input for: 'Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:'");
 		System.in(orderType);
 	}
+	if (orderType == 1){
+		System.out.println("What is the table number for this order?");
+		System.in(tableNum);
+	}
+
+
 	System.out.println("Is this order for an existing customer? Answer y/n: ");
 	System.in(existingCus);
 	// 	CHECK IF Y OR N IS ENTERED TO MOVE FORWARD
@@ -105,16 +112,16 @@ public class Menu {
 		System.out.println("Which customer is this order for? Enter ID Number:");
 		System.in(IDNumber);
 	}
-	if (orderType == 1){
-		System.out.println("What is the table number for this order?");
-		System.in(tableNum);
-	}
+	
 
 	System.out.println("Let's build a pizza!");
+	buildPizza();
+	System.out.println("Do you want to add discounts to this order? Enter y/n?");
+	System.in(isDiscount);
 	System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
 	System.in(pizzaAdd);
 
-	System.out.println("Do you want to add discounts to this order? Enter y/n?");
+	
 
 	//call order constructor and enter the order data, 
 	//call pizza constructor 
