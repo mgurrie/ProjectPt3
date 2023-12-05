@@ -83,6 +83,7 @@ public class Menu {
 	char existingCus;
 	int IDNumber;
 	int tableNum; 
+	int pizzaAdd;
 	System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 	System.in(orderType);
 	//	CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
@@ -108,6 +109,12 @@ public class Menu {
 		System.out.println("What is the table number for this order?");
 		System.in(tableNum);
 	}
+
+	System.out.println("Let's build a pizza!");
+	System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
+	System.in(pizzaAdd);
+
+	System.out.println("Do you want to add discounts to this order? Enter y/n?");
 
 	//call order constructor and enter the order data, 
 	//call pizza constructor 
