@@ -193,12 +193,40 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		 */
+		ArrayList<Order> ordersByDate = new ArrayList<>();
 
+		try {
 
+			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
+			
+			PreparedStatement ready = conn.prepareStatement(orderDate);
+			ResultSet returnQ = prep_selInv.executeQuery();
+			ResultSet topUnit;
 
-		
+			while (queryReturn.next()) {
+				int orderNum = returnQ.getInt(1);
+				String orderType = returnQ.getNString(2);
+				int orderCompleted = returnQ.getDouble(3);
+				Date OrderDate = returnQ.getDouble(4);
+				Float orderBuisness = returnQ.getDouble(5);
+				Float CustPrice = returnQ.getDouble(6);
+				int custID = returnQ.getInt(7);
+
+				ordersByDate.add(new Order(orderNum, orderType, orderCompleted, OrderDate, orderBuisness, CustPrice, custID));
+
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting all orders");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return null;
+		conn.close();
+		return ordersByDate;
 	}
 	
 	public static Order getLastOrder(){
@@ -221,13 +249,42 @@ public final class DBNinja {
 		 * and return a list of those orders.
 		 *  
 		 */
-		
+		ArrayList<Order> ordersByDate = new ArrayList<>();
 
+		try {
 
+			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
+			
+			PreparedStatement ready = conn.prepareStatement(orderDate);
+			ResultSet returnQ = prep_selInv.executeQuery();
+			ResultSet topUnit;
 
+			while (queryReturn.next()) {
+				int orderNum = returnQ.getInt(1);
+				String orderType = returnQ.getNString(2);
+				int orderCompleted = returnQ.getDouble(3);
+				Date OrderDate = returnQ.getDouble(4);
+				Float orderBuisness = returnQ.getDouble(5);
+				Float CustPrice = returnQ.getDouble(6);
+				int custID = returnQ.getInt(7);
 
-		 return null;
+				ordersByDate.add(new Order(orderNum, orderType, orderCompleted, OrderDate, orderBuisness, CustPrice, custID));
+
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting all orders");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+		return ordersByDate;
 	}
+
 		
 	public static ArrayList<Discount> getDiscountList() throws SQLException, IOException {
 		connect_to_db();
@@ -272,13 +329,33 @@ public final class DBNinja {
 		 * If it's not found....then return null
 		 *  
 		 */
+		Int disID;
+		OrderDiscount cname1;
+		String query = "Select DiscountID From discount WHERE DiscountName=" + name + ";";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+		
+		while(rset.next())
+		{
+			disID = rset.getInt(1); 
+		}
+		String query1 = "Select * From discount_order WHERE DiscountID=" + disID + ";";
+		Statement stmt1 = conn.createStatement();
+		ResultSet rset1 = stmt.executeQuery(query1);
 
+		while(rset.next())
+		{
+			cname1 = rset.getInt(1) + rset.getInt(2); 
+		}
 
-
-
-		 return null;
+		conn.close();
+		if (cname1 != null){
+			return cname1;
+		}
+		else {
+			return null;
+		}
 	}
-
 
 	public static ArrayList<Customer> getCustomerList() throws SQLException, IOException {
 		connect_to_db();
@@ -428,18 +505,38 @@ public final class DBNinja {
 	
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
 		connect_to_db();
+		double basePrice = 0.0;
 		/* 
 		 * Query the database fro the base customer price for that size and crust pizza.
 		 * 
 		*/
 		
-		
-		
-		
-		
-		
+		try {
+
+			String cost = "SELECT BaseCost FROM pizza_base WHERE BaseSize = ? and BaseCrust = ?;";
+
+			PreparedStatement ready = conn.prepareStatement(cost);
+			ready.setString(1, size);
+			ready.setString(2, crust);
+
+			ResultSet returnQ = ready.executeQuery();
+
+			while (returnQ.next()) {
+				basePrice = returnQ.getDouble(1);
+
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting base price");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return 0.0;
+		conn.close();
+		return basePrice;
 	}
 
 	public static double getBaseBusPrice(String size, String crust) throws SQLException, IOException {
@@ -448,12 +545,32 @@ public final class DBNinja {
 		 * Query the database fro the base business price for that size and crust pizza.
 		 * 
 		*/
-		
-		
-		
-		
+		try {
+
+			String cost = "SELECT BasePrice FROM pizza_base WHERE BaseSize = ? and BaseCrust = ?;";
+
+			PreparedStatement ready = conn.prepareStatement(cost);
+			ready.setString(1, size);
+			ready.setString(2, crust);
+
+			ResultSet returnQ = ready.executeQuery();
+
+			while (returnQ.next()) {
+				basePrice = returnQ.getDouble(1);
+
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting base buisness price");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-		return 0.0;
+		conn.close();
+		return basePrice;
 	}
 
 	public static void printInventory() throws SQLException, IOException {
@@ -552,19 +669,19 @@ public final class DBNinja {
 		 connect_to_db();
 
 		/* 
-		 * an example query using a constructed string...
-		 * remember, this style of query construction could be subject to sql injection attacks!
-		 * 
-		 */
-		String cname1 = "";
-		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
-		Statement stmt = conn.createStatement();
-		ResultSet rset = stmt.executeQuery(query);
+		//  * an example query using a constructed string...
+		//  * remember, this style of query construction could be subject to sql injection attacks!
+		//  * 
+		//  */
+		// String cname1 = "";
+		// String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
+		// Statement stmt = conn.createStatement();
+		// ResultSet rset = stmt.executeQuery(query);
 		
-		while(rset.next())
-		{
-			cname1 = rset.getString(1) + " " + rset.getString(2); 
-		}
+		// while(rset.next())
+		// {
+		// 	cname1 = rset.getString(1) + " " + rset.getString(2); 
+		// }
 
 		/* 
 		* an example of the same query using a prepared statement...
@@ -584,7 +701,7 @@ public final class DBNinja {
 		}
 
 		conn.close();
-		return cname1; // OR cname2
+		return cname2;
 	}
 
 	/*
