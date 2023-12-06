@@ -206,15 +206,33 @@ public class Menu {
 		String orderOption = reader.readLine();
 		if (orderOption != "a" || orderOption != "b" || orderOption != "c" || orderOption != "d") {
 			System.out.println("I don't understand that input, returning to menu");
-			//return
+			//exit
 		}
 		if (orderOption == "a"){
 			DBNinja.getOrders(false);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
-			
-			DBNinja.getOrderbyID(id);
+			if (id == -1){
+				//exit
+			}
+			else{
+				DBNinja.getOrderbyID(id);
+				//exit
+			}
+		}
+		if (orderOption == "b"){
+			DBNinja.getOrders(true);
+			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+			String option = reader.readLine();
+			id = Integer.parseInt(option);
+			if (id == -1){
+				//exit
+			}
+			else{
+				DBNinja.getOrderbyID(id);
+				//exit
+			}
 		}
 		
 		// User Input Prompts...
