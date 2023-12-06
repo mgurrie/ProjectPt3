@@ -80,48 +80,41 @@ public class Menu {
 	public static void EnterOrder() throws SQLException, IOException 
 	{
 	int orderType;
-	char existingCus;
-	int IDNumber;
+	String existingCus;
+	int custID;
 	int tableNum; 
 	int pizzaAdd;
 	char isDiscount;
+
+	// CHECK FOR ORDER TYPE
 	System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
-	System.in(orderType);
-	//	CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
+	orderType = reader.read();
+	//		CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
 	if (orderType != 1 || orderType != 2 || orderType != 3){
 		System.out.println("ERROR: I don't understand your input for: 'Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:'");
-		System.in(orderType);
+		orderType = reader.read();
 	}
+	// 		CHECK FOR TABLE NUMBER
 	if (orderType == 1){
 		System.out.println("What is the table number for this order?");
-		System.in(tableNum);
+		tableNum = reader.read();
 	}
 
-
+	// HANDLE CUSTOMER
 	System.out.println("Is this order for an existing customer? Answer y/n: ");
-	System.in(existingCus);
-	// 	CHECK IF Y OR N IS ENTERED TO MOVE FORWARD
-	if (existingCus != 'y' || existingCus != 'n') {
+	existingCus = reader.readLine();
+	// 		CHECK IF Y OR N IS ENTERED TO MOVE FORWARD
+	if (existingCus.equals("y") || existingCus.equals("n")) {
 		System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
-		System.in(existingCus);
+		existingCus = reader.readLine();;
 	}
-	// IF EXISTING CUSTOMER IS TRUE 
-	else if (existingCus == 'y') {
+	// 		IF EXISTING CUSTOMER IS TRUE 
+	else if (existingCus.equals("y")) {
 		System.out.println("Here's a list of the current customers: ");
 		viewCustomers();
 		System.out.println("Which customer is this order for? Enter ID Number:");
-		System.in(IDNumber);
+		custID = reader.read();
 	}
-	
-
-	System.out.println("Let's build a pizza!");
-	buildPizza();
-	System.out.println("Do you want to add discounts to this order? Enter y/n?");
-	System.in(isDiscount);
-	System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
-	System.in(pizzaAdd);
-
-	
 
 	//call order constructor and enter the order data, 
 	//call pizza constructor 
@@ -183,17 +176,13 @@ public class Menu {
 	// Enter a new customer in the database
 	public static void EnterCustomer() throws SQLException, IOException 
 	{
-		string fName;
-		string lName;
-		string line;
-		int phoneNumber;
+		Customer cust;
+
 		System.out.println("What is this customer's name (first <space> last");
-		line = TextIO.getln();
-        fName = input.substring(0, space);
-        lName = input.substring(space+1);
+		
 		System.out.println("What is this customer's phone number (##########) (No dash/space)");
-		System.in(phoneNumber);
-		//ADD NUMBER TO THE DB 
+		
+
 
 	}
 

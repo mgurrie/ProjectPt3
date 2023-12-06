@@ -71,19 +71,18 @@ public final class DBNinja {
 
 		// order table
 		String insertOrder =
-		 "INSERT INTO Pizzeria.order (OrderNum, OrderType, OrderCompletion, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID) " + 
-		 "VALUES (?, ?, ?, ?, ?, ?, ?)";
+		 "INSERT INTO Pizzeria.order (OrderType, OrderCompletion, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID) " + 
+		 "VALUES (?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertOrder)) {
 		System.out.println("Insert test: ");
 	
-		ps.setInt(1, o.getOrderID());
-		ps.setString(2, o.getOrderType());
-		ps.setInt(3, o.getIsComplete());
-		ps.setDate(4, java.sql.Date.valueOf(o.getDate()));
-		ps.setDouble(5, o.getBusPrice());
-		ps.setDouble(6, o.getCustPrice());
-		ps.setDouble(7, o.getCustID());
+		ps.setString(1, o.getOrderType());
+		ps.setInt(2, o.getIsComplete());
+		ps.setDate(3, java.sql.Date.valueOf(o.getDate()));
+		ps.setDouble(4, o.getBusPrice());
+		ps.setDouble(5, o.getCustPrice());
+		ps.setDouble(6, o.getCustID());
 		ps.executeUpdate();
 	
 		System.out.println("success order\n");
@@ -166,22 +165,21 @@ public final class DBNinja {
 		 */
 		
 		String insertPizza =
-		 "INSERT INTO Pizzeria.pizza (PizzaID, PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
-		 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		 "INSERT INTO Pizzeria.pizza (PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
+		 "VALUES (?, ?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
 		System.out.println("Insert test: ");
 
 		// use pizza discount
 	
-		ps.setInt(1, p.getPizzaID());
-		ps.setString(2, p.getSize());
-		ps.setString(3, p.getPizzaState());
-		ps.setDouble(4, p.getCustPrice());
-		ps.setDouble(5, p.getBusPrice());
-		ps.setString(6, p.getCrustType());
-		ps.setString(7, p.getPizzaDate());
-		ps.setInt(8, p.getOrderID());
+		ps.setString(1, p.getSize());
+		ps.setString(2, p.getPizzaState());
+		ps.setDouble(3, p.getCustPrice());
+		ps.setDouble(4, p.getBusPrice());
+		ps.setString(5, p.getCrustType());
+		ps.setString(6, p.getPizzaDate());
+		ps.setInt(7, p.getOrderID());
 		ps.executeUpdate();
 	
 		System.out.println(p.toString());
@@ -376,17 +374,16 @@ public final class DBNinja {
 		 */
 				
 		String insertCustomer =
-		 "INSERT INTO Pizzeria.customer (CustomerID, CustomerFName, CustomerLName, CustomerPhone, CustomerAddr) " + 
-		 "VALUES (?, ?, ?, ?, ?)";
+		 "INSERT INTO Pizzeria.customer (CustomerFName, CustomerLName, CustomerPhone, CustomerAddr) " + 
+		 "VALUES (?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertCustomer)) {
 		System.out.println("Insert test: ");
 	
-		ps.setInt(1, c.getCustID());
-		ps.setString(2, c.getFName());
-		ps.setString(3, c.getLName());
-		ps.setString(4, c.getPhone());
-		ps.setString(5, c.getAddress());
+		ps.setString(1, c.getFName());
+		ps.setString(2, c.getLName());
+		ps.setString(3, c.getPhone());
+		ps.setString(4, c.getAddress());
 		ps.executeUpdate();
 	
 		System.out.println(c.toString());
@@ -1104,18 +1101,18 @@ public final class DBNinja {
 	public static void main(String args[]) throws IOException, SQLException{
 
 		// -- test add pizza --
-		//Pizza p = new Pizza(2, "small", "gluten-free", 1, "ready", "Jul 3, 2022",
-		//	16.55, 10.55);
-    	//addPizza(p);
+		Pizza p = new Pizza(2, "small", "gluten-free", 1, "ready", "Jul 3, 2022",
+			16.55, 10.55);
+    	addPizza(p);
 
 		// -- test add customer --
-		/*// Customer c = new Customer(1, "fname", "lname", "1234567891");
-		// c.setAddress("11 cochran rd", "city", "state", "29631");
-		// addCustomer(c);*/
+		Customer c = new Customer(1, "fname", "lname", "1234567891");
+		c.setAddress("11 cochran rd", "city", "state", "29631");
+		addCustomer(c);
 
 		// // -- test add order --
-		//Order o = new Order(3, 1, "delivery", "2020-10-10", 15.23, 58.36, 0);
-		// addOrder(o);
+		Order o = new Order(3, 102, "delivery", "2020-10-10", 15.23, 58.36, 0);
+		addOrder(o);
 
 		// -- test addToInv --
 		/*Topping t = new Topping(2, "Cheese", 3.20, 4.20, 5.20, 6.20,
