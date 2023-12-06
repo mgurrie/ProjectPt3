@@ -5,7 +5,6 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 /*
  * This file is where most of your code changes will occur You will write the code to retrieve
@@ -441,26 +440,26 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		 */
+		connect_to_db();
 		ArrayList<Order> ordersByDate = new ArrayList<>();
+		//Needs to be fixed
 
 		try {
 
-			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
-			
+			String orderDate = "SELECT * FROM order WHERE OrderComplete = " + openOnly + " ORDER BY OrderNum;";
 			PreparedStatement ready = conn.prepareStatement(orderDate);
-			ResultSet returnQ = prep_selInv.executeQuery();
-			ResultSet topUnit;
+			ResultSet returnQ = ready.executeQuery(orderDate);
 
-			while (queryReturn.next()) {
-				int orderNum = returnQ.getInt(1);
-				String orderType = returnQ.getNString(2);
-				int orderCompleted = returnQ.getDouble(3);
-				Date OrderDate = returnQ.getDouble(4);
-				Float orderBuisness = returnQ.getDouble(5);
-				Float CustPrice = returnQ.getDouble(6);
-				int custID = returnQ.getInt(7);
-
-				ordersByDate.add(new Order(orderNum, orderType, orderCompleted, OrderDate, orderBuisness, CustPrice, custID));
+			while (returnQ.next()) {
+				int orderID = returnQ.getInt(1);
+				int custID = returnQ.getInt(2);
+				String orderType = returnQ.getString(3);
+				String datex = returnQ.getString(4);
+				double custPrice = returnQ.getDouble(5);
+				double busPrice = returnQ.getDouble(6);
+				int iscomplete = returnQ.getInt(7);
+				
+				ordersByDate.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
 
 			}
 
@@ -476,47 +475,65 @@ public final class DBNinja {
 		conn.close();
 		return ordersByDate;
 	}
+
 	
-	public static Order getLastOrder(){
+	public static Order getLastOrder() throws SQLException, IOException {
 		/*
 		 * Query the database for the LAST order added
 		 * then return an Order object for that order.
 		 * NOTE...there should ALWAYS be a "last order"!
 		 */
-		
+		connect_to_db();
+		Order lastOrder = null;
 
+		try {
 
+			String order = "SELECT * FROM order ORDER BY OrderNum DESC LIMIT 1";
+			Statement ready = conn.createStatement();
+			ResultSet returnQ = ready.executeQuery(order);
 
+			if (returnQ.next()) {
+				lastOrder = new Order(returnQ.getInt(1), returnQ.getInt(2), returnQ.getString(3), returnQ.getString(4), returnQ.getDouble(5),
+				returnQ.getDouble(6), returnQ.getInt(7));
+			}
 
-		 return null;
+		} catch (SQLException error) {
+			System.out.println("Error getting customer name");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		conn.close();
+		return lastOrder;
 	}
 
-	public static ArrayList<Order> getOrdersByDate(String date){
+	public static ArrayList<Order> getOrdersByDate(String date) throws SQLException, IOException {
 		/*
 		 * Query the database for ALL the orders placed on a specific date
 		 * and return a list of those orders.
 		 *  
 		 */
+		connect_to_db();
 		ArrayList<Order> ordersByDate = new ArrayList<>();
 
 		try {
 
 			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
-			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
-			ResultSet returnQ = prep_selInv.executeQuery();
-			ResultSet topUnit;
+			ResultSet returnQ = ready.executeQuery(orderDate);
 
 			while (returnQ.next()) {
-				int orderNum = returnQ.getInt(1);
-				String orderType = returnQ.getNString(2);
-				int orderCompleted = returnQ.getDouble(3);
-				Date OrderDate = returnQ.getDouble(4);
-				Float orderBuisness = returnQ.getDouble(5);
-				Float CustPrice = returnQ.getDouble(6);
-				int custID = returnQ.getInt(7);
-
-				ordersByDate.add(new Order(orderNum, orderType, orderCompleted, OrderDate, orderBuisness, CustPrice, custID));
+				int orderID = returnQ.getInt(1);
+				int custID = returnQ.getInt(2);
+				String orderType = returnQ.getString(3);
+				String datex = returnQ.getString(4);
+				double custPrice = returnQ.getDouble(5);
+				double busPrice = returnQ.getDouble(6);
+				int iscomplete = returnQ.getInt(7);
+				
+				ordersByDate.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
 
 			}
 
@@ -532,6 +549,7 @@ public final class DBNinja {
 		conn.close();
 		return ordersByDate;
 	}
+
 
 		
 	public static ArrayList<Discount> getDiscountList() throws SQLException, IOException {
@@ -571,39 +589,37 @@ public final class DBNinja {
 		return discount;
 	}
 
-	public static Discount findDiscountByName(String name){
+	public static Discount findDiscountByName(String name) throws SQLException, IOException {
 		/*
 		 * Query the database for a discount using it's name.
 		 * If found, then return an OrderDiscount object for the discount.
 		 * If it's not found....then return null
 		 *  
 		 */
-		Int disID;
-		OrderDiscount cname1;
-		String query = "Select DiscountID From discount WHERE DiscountName=" + name + ";";
-		Statement stmt = conn.createStatement();
-		ResultSet rset = stmt.executeQuery(query);
-		
-		while(rset.next())
-		{
-			disID = rset.getInt(1); 
-		}
-		String query1 = "Select * From discount_order WHERE DiscountID=" + disID + ";";
-		Statement stmt1 = conn.createStatement();
-		ResultSet rset1 = stmt.executeQuery(query1);
+		connect_to_db();
+		Discount discountFound = null;
 
-		while(rset.next())
-		{
-			cname1 = rset.getInt(1) + rset.getInt(2); 
+		try {
+
+		String query = "Select DiscountID From discount WHERE DiscountName=" + name + ";";
+			Statement ready = conn.createStatement();
+			ResultSet returnQ = ready.executeQuery(query);
+
+			if (returnQ.next()) {
+				discountFound = (new Discount(returnQ.getInt(1), returnQ.getString(2), returnQ.getDouble(3), returnQ.getBoolean(4)));
+			
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting customer name");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
 		}
 
 		conn.close();
-		if (cname1 != null){
-			return cname1;
-		}
-		else {
-			return null;
-		}
+		return discountFound;
 	}
 
 	public static ArrayList<Customer> getCustomerList() throws SQLException, IOException {
@@ -637,18 +653,20 @@ public final class DBNinja {
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
+		// System.out.println(customer);
 		return customer;
 	}
 
-	public static Customer findCustomerByPhone(String phoneNumber){
+	public static Customer findCustomerByPhone(String phoneNumber) throws SQLException, IOException {
 		/*
 		 * Query the database for a customer using a phone number.
 		 * If found, then return a Customer object for the customer.
 		 * If it's not found....then return null
 		 *  
 		 */
+
 		connect_to_db();
-		Customer customerFound;
+		Customer customerFound = null;
 
 		try {
 
@@ -656,9 +674,11 @@ public final class DBNinja {
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(customer);
 
-			while (returnQ.next()) {
-				customerFound = returnQ.getString(1) + returnQ.getString(2);
+			if (returnQ.next()) {
+				customerFound = (new Customer(returnQ.getInt(1), returnQ.getString(2), returnQ.getString(3), returnQ.getString(4)));
+			
 			}
+
 		} catch (SQLException error) {
 			System.out.println("Error getting customer name");
 			while (error != null) {
@@ -680,14 +700,16 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		 */
+		
 			ArrayList<Topping> toppings = new ArrayList<>();
 			try {
-			String topp = "Select ToppingName, ToppingKey FROM topping;";
+			String topp = "Select * FROM topping;";
 			PreparedStatement ready = conn.prepareStatement(topp);
 			ResultSet returnQ = ready.executeQuery(topp);
 
 			while (returnQ.next()) {
-				toppings.add(new Topping(returnQ.getInt(1), returnQ.getString(2), returnQ.getString(3), returnQ.getString(4)));
+				toppings.add(new Topping(returnQ.getInt(1), returnQ.getString(2), returnQ.getDouble(3), returnQ.getDouble(4), returnQ.getDouble(5),
+				returnQ.getDouble(6), returnQ.getDouble(7), returnQ.getDouble(8), returnQ.getInt(9), returnQ.getInt(10)));
 			}
 		} 
 		catch (SQLException error) {
@@ -703,7 +725,7 @@ public final class DBNinja {
 		return toppings;
 	}
 
-	public static Topping findToppingByName(String name){
+	public static Topping findToppingByName(String name) throws SQLException, IOException {
 		/*
 		 * Query the database for the topping using it's name.
 		 * If found, then return a Topping object for the topping.
@@ -720,9 +742,9 @@ public final class DBNinja {
 			ResultSet returnQ = ready.executeQuery(topping);
 
 			if (returnQ.next()) {
-				toppingFound = new Topping(
-						returnQ.getInt("ToppingID")
-				);
+				toppingFound = new Topping(returnQ.getInt(1), returnQ.getString(2), returnQ.getDouble(3), returnQ.getDouble(4), returnQ.getDouble(5),
+				returnQ.getDouble(6), returnQ.getDouble(7), returnQ.getDouble(8), returnQ.getInt(9), returnQ.getInt(10));
+			
 			}
 
 		} catch (SQLException error) {
@@ -1125,14 +1147,8 @@ public final class DBNinja {
 		// -- test use topping --
 		//useTopping(p, t, true);
 
-
-		// -- test use discount --
-		//Discount d = new Discount(1, "employee", 15, true);
-		//useOrderDiscount(o, d);
-
-		// -- test print toppings by popularity
-		printInventory();
-
+		getCustomerList();
+		// getBaseCustPrice("Medium", "Pan");
 	}
 
 }
