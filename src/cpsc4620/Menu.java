@@ -254,7 +254,7 @@ public class Menu {
 		/*
 		 * Print the inventory. Display the topping ID, name, and current inventory
 		*/
-		
+		DBNinja.printInventory();
 		
 		
 		
