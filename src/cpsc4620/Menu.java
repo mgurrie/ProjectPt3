@@ -200,7 +200,22 @@ public class Menu {
 		* The details include the full order type information, the pizza information (including pizza discounts), and the order discounts.
 		* 
 		*/ 
+		int id;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
+		String orderOption = reader.readLine();
+		if (orderOption != "a" || orderOption != "b" || orderOption != "c" || orderOption != "d") {
+			System.out.println("I don't understand that input, returning to menu");
+			//return
+		}
+		if (orderOption == "a"){
+			DBNinja.getOrders(false);
+			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+			String option = reader.readLine();
+			id = Integer.parseInt(option);
 			
+			DBNinja.getOrderbyID(id);
+		}
 		
 		// User Input Prompts...
 		System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
@@ -256,14 +271,25 @@ public class Menu {
 		 * This should print the current inventory and then ask the user which topping (by ID) they want to add more to and how much to add
 		 */
 		
-		
-		// User Input Prompts...
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		int topingOption = 0;
+		int addUnits = 0;
+
+		DBNinja.printInventory();
 		System.out.println("Which topping do you want to add inventory to? Enter the number: ");
+		String option = reader.readLine();
+		topingOption = Integer.parseInt(option);
+		while (topingOption > 17 || topingOption < 1){
+			System.out.println("Incorrect entry, not an option");
+			System.out.println("Which topping do you want to add inventory to? Enter the number: ");
+			option = reader.readLine();
+			topingOption = Integer.parseInt(option);
+		}
 		System.out.println("How many units would you like to add? ");
-		System.out.println("Incorrect entry, not an option");
-	
-		
-		
+		option = reader.readLine();
+		addUnits = Integer.parseInt(option);
+		Topping t = DBNinja.findToppingByKey(topingOption);
+		DBNinja.addToInventory(t, addUnits);		
 		
 	}
 
