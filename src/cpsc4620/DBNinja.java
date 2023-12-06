@@ -313,11 +313,27 @@ public final class DBNinja {
 		 * What that means will be specific to your implementatinon.
 		 */
 		
-		
-		
-		
-		
+		// insert pizza and discount into pizza_discount bridge table
+		String insertPizzaDiscount =
+         "INSERT INTO Pizzeria.discount_pizza (DiscountID, PizzaID) " + 
+         "VALUES (?, ?)";
+ 
+        try (PreparedStatement ps = conn.prepareStatement(insertPizzaDiscount)) {
+            System.out.println("Insert discounpizza test: ");
+        
+            ps.setInt(1, d.getDiscountID());
+            ps.setInt(2, p.getPizzaID());
+            ps.executeUpdate();
+        
+            System.out.println("complete discountpizza");
+            System.out.println();
+    
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	public static void useOrderDiscount(Order o, Discount d) throws SQLException, IOException
@@ -330,11 +346,26 @@ public final class DBNinja {
 		 * this information in the dabast
 		 */
 		
-		
-		
-		
-		
+		String insertOrderDiscount =
+         "INSERT INTO Pizzeria.discount_order (DiscountID, OrderNum) " + 
+         "VALUES (?, ?)";
+ 
+        try (PreparedStatement ps = conn.prepareStatement(insertOrderDiscount)) {
+            System.out.println("Insert discountorder test: ");
+        
+            ps.setInt(1, d.getDiscountID());
+            ps.setInt(2, o.getOrderID());
+            ps.executeUpdate();
+        
+            System.out.println("complete discountorder");
+            System.out.println();
+    
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	public static void addCustomer(Customer c) throws SQLException, IOException {
@@ -851,15 +882,27 @@ public final class DBNinja {
 		 * 
 		 */
 
+		String selectInv = "SELECT ToppingName, ToppingInv FROM Pizzeria.topping ORDER BY ToppingName ASC";
+		try (PreparedStatement ps = conn.prepareStatement(selectInv)) {
+			try (ResultSet rs = ps.executeQuery()) {
+				// get columns
+				for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    System.out.print(rs.getMetaData().getColumnName(i) + "\t");
+                }
+                System.out.println(); // Move to the next line
 
-		
-		
-		
-		
-		
+                // Print data
+                while (rs.next()) {
+                    for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                        System.out.print(rs.getString(i) + "\t");
+                    }
+                    System.out.println(); // Move to the next line
+                }
+			}
+		}
+	
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
-
-
+		conn.close();
 	}
 	
 	public static void printToppingPopReport() throws SQLException, IOException
@@ -874,13 +917,27 @@ public final class DBNinja {
 		 * 
 		 */
 
+		String selectToppingPopView = "SELECT * FROM ToppingPopularity";
+		try (PreparedStatement ps = conn.prepareStatement(selectToppingPopView)) {
+			try (ResultSet rs = ps.executeQuery()) {
+				// get rows
+				for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    System.out.print(rs.getMetaData().getColumnName(i) + "\t");
+                }
+                System.out.println(); // Move to the next line
 
-		
-		
-		
-		
-		
+                // Print data
+                while (rs.next()) {
+                    for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                        System.out.print(rs.getString(i) + "\t");
+                    }
+                    System.out.println(); // Move to the next line
+                }
+			}
+		}
+	
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	public static void printProfitByPizzaReport() throws SQLException, IOException
@@ -895,11 +952,27 @@ public final class DBNinja {
 		 * 
 		 */
 		
-		
-		
-		
-		
+		String selectProfitByPizza = "SELECT * FROM ProfitByPizza";
+		try (PreparedStatement ps = conn.prepareStatement(selectProfitByPizza)) {
+			try (ResultSet rs = ps.executeQuery()) {
+				// get rows
+				for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    System.out.print(rs.getMetaData().getColumnName(i) + "\t");
+                }
+                System.out.println(); // Move to the next line
+
+                // Print data
+                while (rs.next()) {
+                    for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                        System.out.print(rs.getString(i) + "\t");
+                    }
+                    System.out.println(); // Move to the next line
+                }
+			}
+		}
+	
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	public static void printProfitByOrderType() throws SQLException, IOException
@@ -914,12 +987,27 @@ public final class DBNinja {
 		 * 
 		 */
 		
-		
-		
-		
-		
-		
-		//DO NOT FORGET TO CLOSE YOUR CONNECTION	
+		String selectProfitByOrder = "SELECT * FROM ProfitByOrderType";
+		try (PreparedStatement ps = conn.prepareStatement(selectProfitByOrder)) {
+			try (ResultSet rs = ps.executeQuery()) {
+				// get rows
+				for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    System.out.print(rs.getMetaData().getColumnName(i) + "\t");
+                }
+                System.out.println(); // Move to the next line
+
+                // Print data
+                while (rs.next()) {
+                    for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                        System.out.print(rs.getString(i) + "\t");
+                    }
+                    System.out.println(); // Move to the next line
+                }
+			}
+		}
+	
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 	
 	
@@ -1016,9 +1104,9 @@ public final class DBNinja {
 	public static void main(String args[]) throws IOException, SQLException{
 
 		// -- test add pizza --
-		Pizza p = new Pizza(2, "small", "gluten-free", 1, "ready", "Jul 3, 2022",
-			16.55, 10.55);
-    	addPizza(p);
+		//Pizza p = new Pizza(2, "small", "gluten-free", 1, "ready", "Jul 3, 2022",
+		//	16.55, 10.55);
+    	//addPizza(p);
 
 		// -- test add customer --
 		/*// Customer c = new Customer(1, "fname", "lname", "1234567891");
@@ -1026,19 +1114,28 @@ public final class DBNinja {
 		// addCustomer(c);*/
 
 		// // -- test add order --
-		//// Order o = new Order(3, 1, "delivery", "2020-10-10", 15.23, 58.36, 0);
-		//// addOrder(o);
+		//Order o = new Order(3, 1, "delivery", "2020-10-10", 15.23, 58.36, 0);
+		// addOrder(o);
 
 		// -- test addToInv --
-		Topping t = new Topping(2, "Cheese", 3.20, 4.20, 5.20, 6.20,
+		/*Topping t = new Topping(2, "Cheese", 3.20, 4.20, 5.20, 6.20,
 			5.20, 2.21, 1, 20);
-		//addToInventory(t, 10);
+		addToInventory(t, 10);*/
 
 		// test update order completion
 		//completeOrder(o);
 
 		// -- test use topping --
-		useTopping(p, t, true);
+		//useTopping(p, t, true);
+
+
+		// -- test use discount --
+		//Discount d = new Discount(1, "employee", 15, true);
+		//useOrderDiscount(o, d);
+
+		// -- test print toppings by popularity
+		printInventory();
+
 	}
 
 }
