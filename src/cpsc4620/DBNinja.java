@@ -476,10 +476,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (openOnly){
-				orderDate = "SELECT * FROM order WHERE OrderCompletion = 0 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM Pizzeria.order WHERE OrderCompletion = 0 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM Pizzeria.order ORDER BY OrderNum;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);

@@ -626,10 +626,26 @@ public class Menu {
 		 * This method asks the use which report they want to see and calls the DBNinja method to print the appropriate report.
 		 * 
 		 */
-
-		// User Input Prompts...
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
-		System.out.println("I don't understand that input... returning to menu...");
+		String reportOption = reader.readLine();
+		if (!reportOption.equals("a") && !reportOption.equals("b") && !reportOption.equals("c")) {
+			System.out.println("I don't understand that input... returning to menu...");
+			return;
+		}
+		if (reportOption.equals("a")){
+			DBNinja.printToppingPopReport();
+		}
+		if (reportOption.equals("b")){
+			DBNinja.printProfitByPizzaReport();
+		}
+		if (reportOption.equals("c")){
+			DBNinja.printProfitByOrderType();
+		}
+
+		// // User Input Prompts...
+		// System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
+		// System.out.println("I don't understand that input... returning to menu...");
 
 	}
 
