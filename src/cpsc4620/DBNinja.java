@@ -471,12 +471,17 @@ public final class DBNinja {
 		 * 
 		 */
 		connect_to_db();
-		ArrayList<Order> ordersByDate = new ArrayList<>();
+		ArrayList<Order> ordersBy = new ArrayList<>();
 		//Needs to be fixed
-
+		String orderDate;
 		try {
-
-			String orderDate = "SELECT * FROM order WHERE OrderComplete = " + openOnly + " ORDER BY OrderNum;";
+			if (openOnly){
+				orderDate = "SELECT * FROM order WHERE OrderComplete = 0 ORDER BY OrderNum;";
+			}
+			else {
+				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+			}
+			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
 			ResultSet returnQ = ready.executeQuery(orderDate);
 
@@ -489,7 +494,7 @@ public final class DBNinja {
 				double busPrice = returnQ.getDouble(6);
 				int iscomplete = returnQ.getInt(7);
 				
-				ordersByDate.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
+				ordersBy.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
 
 			}
 
@@ -503,7 +508,61 @@ public final class DBNinja {
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return ordersByDate;
+		return ordersBy;
+	}
+
+	public static ArrayList<Order> getClosedOrders(boolean closed) throws SQLException, IOException {
+		connect_to_db();
+		/*
+		 * Return an arraylist of all of the orders.
+		 * 	openOnly == true => only return a list of open (ie orders that have not been marked as completed)
+		 *           == false => return a list of all the orders in the database
+		 * Remember that in Java, we account for supertypes and subtypes
+		 * which means that when we create an arrayList of orders, that really
+		 * means we have an arrayList of dineinOrders, deliveryOrders, and pickupOrders.
+		 * 
+		 * Don't forget to order the data coming from the database appropriately.
+		 * 
+		 */
+		connect_to_db();
+		ArrayList<Order> ordersBy = new ArrayList<>();
+		//Needs to be fixed
+		String orderDate;
+		try {
+			if (closed){
+				orderDate = "SELECT * FROM order WHERE OrderComplete = 1 ORDER BY OrderNum;";
+			}
+			else {
+				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+			}
+			
+			PreparedStatement ready = conn.prepareStatement(orderDate);
+			ResultSet returnQ = ready.executeQuery(orderDate);
+
+			while (returnQ.next()) {
+				int orderID = returnQ.getInt(1);
+				int custID = returnQ.getInt(2);
+				String orderType = returnQ.getString(3);
+				String datex = returnQ.getString(4);
+				double custPrice = returnQ.getDouble(5);
+				double busPrice = returnQ.getDouble(6);
+				int iscomplete = returnQ.getInt(7);
+				
+				ordersBy.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
+
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting all orders");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+		return ordersBy;
 	}
 
 	
@@ -578,6 +637,38 @@ public final class DBNinja {
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 		return ordersByDate;
+	}
+
+	public static Order getOrderbyID(int id) throws SQLException, IOException {
+		/*
+		 * Query the database for ALL the orders placed on a specific date
+		 * and return a list of those orders.
+		 *  
+		 */
+		connect_to_db();
+		Order idOrder = null;
+
+		try {
+
+			String order = "SELECT * FROM order WHERE OrderNum = " + id + ";";
+			Statement ready = conn.createStatement();
+			ResultSet returnQ = ready.executeQuery(order);
+
+			if (returnQ.next()) {
+				idOrder = new Order(returnQ.getInt(1), returnQ.getInt(2), returnQ.getString(3), returnQ.getString(4), returnQ.getDouble(5),
+				returnQ.getDouble(6), returnQ.getInt(7));
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting customer name");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		conn.close();
+		return idOrder;
 	}
 
 
@@ -789,6 +880,41 @@ public final class DBNinja {
 		return toppingFound;
 	}
 
+	public static Topping findToppingByKey(int key) throws SQLException, IOException {
+		/*
+		 * Query the database for the topping using it's name.
+		 * If found, then return a Topping object for the topping.
+		 * If it's not found....then return null
+		 *  
+		 */
+		connect_to_db();
+		Topping toppingFound = null;
+
+		try {
+
+			String topping = "Select * FROM topping WHERE ToppingKey = " + key + ";";
+			Statement ready = conn.createStatement();
+			ResultSet returnQ = ready.executeQuery(topping);
+
+			if (returnQ.next()) {
+				toppingFound = new Topping(returnQ.getInt(1), returnQ.getString(2), returnQ.getDouble(3), returnQ.getDouble(4), returnQ.getDouble(5),
+				returnQ.getDouble(6), returnQ.getDouble(7), returnQ.getDouble(8), returnQ.getInt(9), returnQ.getInt(10));
+			
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting customer name");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		conn.close();
+		return toppingFound;
+	}
+
+
 	public static void addToInventory(Topping t, double quantity) throws SQLException, IOException {
 		connect_to_db();
 		/*
@@ -931,7 +1057,7 @@ public final class DBNinja {
 		 * 
 		 */
 
-		String selectInv = "SELECT ToppingName, ToppingInv FROM Pizzeria.topping ORDER BY ToppingName ASC";
+		String selectInv = "SELECT ToppingKey, ToppingName, ToppingInv FROM Pizzeria.topping ORDER BY ToppingKey ASC";
 		try (PreparedStatement ps = conn.prepareStatement(selectInv)) {
 			try (ResultSet rs = ps.executeQuery()) {
 				// get columns
