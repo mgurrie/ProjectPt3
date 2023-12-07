@@ -170,7 +170,6 @@ public final class DBNinja {
 		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
 		System.out.println("Insert test: ");
 
-		// use pizza discount
 	
 		ps.setString(1, p.getSize());
 		ps.setString(2, p.getPizzaState());
@@ -257,15 +256,15 @@ public final class DBNinja {
 		// update topping inventory from topping t based on pizza size from pizza p
 		String update =
 		 "UPDATE Pizzeria.topping " + 
-		 "SET ToppingInv = (?) - (?)" +
+		 "SET ToppingInv = (?)" +
 		 "WHERE ToppingKey = (?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(update)) {
 			System.out.println("update inv test: ");
+			System.out.println(prevInv + " - " + toppingToRemove);
 		
-			ps.setDouble(1, prevInv);
-			ps.setDouble(2, toppingToRemove);
-			ps.setInt(3, t.getTopID());
+			ps.setDouble(1, (prevInv-toppingToRemove));
+			ps.setInt(2, t.getTopID());
 			ps.executeUpdate();
 		
 			System.out.println(t.toString());
@@ -298,6 +297,37 @@ public final class DBNinja {
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
+	}
+
+
+	public static int getLastPizzaID() throws SQLException, IOException {
+		connect_to_db();
+		int lastKey = 0;
+
+		try {
+			String select = "SELECT MAX(PizzaID) AS lastKey FROM pizza";
+			PreparedStatement ready = conn.prepareStatement(select);
+			ResultSet rs = ready.executeQuery(select);
+
+			if (rs.next()) {
+				lastKey = rs.getInt("lastKey");
+				System.out.println("Last Key Number: " + lastKey);
+			} else {
+				System.out.println("No records in the table");
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting all orders");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+
+		return lastKey;
 	}
 	
 	
@@ -653,7 +683,7 @@ public final class DBNinja {
 		ArrayList<Discount> discount = new ArrayList<>();
 		try {
 
-			String disc = "Select DiscountID, DiscountName, DiscountValue, DiscountIsPercent From discount;";
+			String disc = "Select DiscountID, DiscountName, DiscountDollar, DiscountPct From discount;";
 			Statement ready1 = conn.createStatement();
 			PreparedStatement ready = conn.prepareStatement(disc);
 
