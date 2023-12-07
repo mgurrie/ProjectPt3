@@ -3,6 +3,7 @@ package cpsc4620;
 import java.io.IOException;
 import java.sql.*;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -78,7 +79,17 @@ public final class DBNinja {
 	
 		ps.setString(1, o.getOrderType());
 		ps.setInt(2, o.getIsComplete());
-		ps.setDate(3, java.sql.Date.valueOf(o.getDate()));
+
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date utilDate = sdf.parse(o.getDate());
+			java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+			ps.setDate(3, sqlDate);
+		} catch (ParseException e) {
+            // Handle the exception if the string is not in the expected format
+            e.printStackTrace();
+        }
+
 		ps.setDouble(4, o.getBusPrice());
 		ps.setDouble(5, o.getCustPrice());
 		ps.setDouble(6, o.getCustID());
@@ -93,7 +104,7 @@ public final class DBNinja {
 
 		String insertOrderType;
 		// update dine in table
-		if(Objects.equals(o.getOrderType(), "dinein")) {
+		if(Objects.equals(o.getOrderType(), dine_in)) {
 			insertOrderType =
 			"INSERT INTO Pizzeria.dinein (OrderNum, TableNum) " + 
 			"VALUES (?, ?)";
@@ -102,6 +113,7 @@ public final class DBNinja {
 			System.out.println(insertOrderType);
 
 			ps.setInt(1, o.getOrderID());
+			ps.setInt(2, Menu.getTableNum());
 			ps.executeUpdate();
 
 			System.out.println(Objects.equals(o.getOrderType(), "dinein"));
@@ -111,7 +123,7 @@ public final class DBNinja {
 			}
 		}
 		// update pickup table
-		if(Objects.equals(o.getOrderType(), "pickup")) {
+		if(Objects.equals(o.getOrderType(), pickup)) {
 			insertOrderType =
 			"INSERT INTO Pizzeria.pickup (OrderNum, CustomerID) " + 
 			"VALUES (?, ?)";
@@ -130,7 +142,7 @@ public final class DBNinja {
 			}
 		}
 		// update delivery table
-		if(Objects.equals(o.getOrderType(), "delivery")) {
+		if(Objects.equals(o.getOrderType(), delivery )) {
 			insertOrderType =
 			"INSERT INTO Pizzeria.delivery (OrderNum, CustomerID) " + 
 			"VALUES (?, ?)";
@@ -426,6 +438,63 @@ public final class DBNinja {
 		conn.close();
 	}
 
+	public static void updateCustomerAddr(int custID, String addr) throws SQLException, IOException {
+		connect_to_db();
+				
+		/*
+		 *  this method updates ciustomer address by id
+		 */
+
+		 String update =
+         "UPDATE Pizzeria.customer " + 
+         "SET CustomerAddr = (?)" +
+         "WHERE CustomerID = (?)";
+ 
+        try (PreparedStatement ps = conn.prepareStatement(update)) {
+            System.out.println("update customer addr test: ");
+        
+            ps.setString(1, addr);
+            ps.setInt(2, custID);
+            ps.executeUpdate();
+    
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+	}
+
+	public static int getLastCustomerID() throws SQLException, IOException {
+		connect_to_db();
+		int lastKey = 0;
+
+		try {
+			String select = "SELECT MAX(CustomerID) AS lastKey FROM customer";
+			PreparedStatement ready = conn.prepareStatement(select);
+			ResultSet rs = ready.executeQuery(select);
+
+			if (rs.next()) {
+				lastKey = rs.getInt("lastKey");
+				System.out.println("Last Key Number: " + lastKey);
+			} else {
+				System.out.println("No records in the table");
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting customer key");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+
+		return lastKey;
+	}
+
 	public static void completeOrder(Order o) throws SQLException, IOException {
 		connect_to_db();
 		/*
@@ -577,13 +646,13 @@ public final class DBNinja {
 
 		try {
 
-			String order = "SELECT * FROM order ORDER BY OrderNum DESC LIMIT 1";
+			String order = "SELECT * FROM `order` ORDER BY OrderNum DESC LIMIT 1";
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(order);
 
 			if (returnQ.next()) {
-				lastOrder = new Order(returnQ.getInt(1), returnQ.getInt(2), returnQ.getString(3), returnQ.getString(4), returnQ.getDouble(5),
-				returnQ.getDouble(6), returnQ.getInt(7));
+				lastOrder = new Order(returnQ.getInt(1), returnQ.getInt(8), returnQ.getString(2), returnQ.getString(4), returnQ.getDouble(6),
+				returnQ.getDouble(7), returnQ.getInt(3));
 			}
 
 		} catch (SQLException error) {
@@ -1223,13 +1292,13 @@ public final class DBNinja {
 		PreparedStatement os;
 		ResultSet rset2;
 		String query2;
-		query2 = "Select FName, LName From customer WHERE CustID=?;";
+		query2 = "Select CustomerFName, CustomerLName From customer WHERE CustomerID=?;";
 		os = conn.prepareStatement(query2);
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();
 		while(rset2.next())
 		{
-			cname2 = rset2.getString("FName") + " " + rset2.getString("LName"); // note the use of field names in the getSting methods
+			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field names in the getSting methods
 		}
 
 		conn.close();

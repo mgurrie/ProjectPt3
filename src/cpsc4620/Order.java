@@ -31,6 +31,10 @@ public class Order
 	public void addPizza(Pizza p)
 	{
 		PizzaList.add(p);
+
+		// edit
+		CustPrice += p.getCustPrice();
+		BusPrice += p.getBusPrice();
 	}
 	public void addDiscount(Discount d)
 	{

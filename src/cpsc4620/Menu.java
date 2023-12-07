@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import textio.TextIO;
@@ -80,48 +82,159 @@ public class Menu {
 
 	}
 
+
+
+	// handling table number for dine in orders
+	static int tableNum;
+	
+	public static void setTableNum(int n) {
+		tableNum = n;
+	}
+
+	public static int getTableNum() {
+		return tableNum;
+	}
+
+
 	// allow for a new order to be placed
 	public static void EnterOrder() throws SQLException, IOException 
 	{
-	int orderType;
-	String existingCus;
-	int custID;
-	int tableNum; 
-	int pizzaAdd;
-	char isDiscount;
+	int newOrderID = DBNinja.getLastOrder().getOrderID() + 1;
+	String userInput;
+	int custID = 0;
+	int discountID = 0;
+	int tableNum = 0; 
+	String orderType = "";
+	String strDate = ""; 
+	double custPrice = 0;
+	double busPrice = 0; 
+	int iscomplete = 0;
 
-	// CHECK FOR ORDER TYPE
+	// ORDER DATE
+	Date date = Calendar.getInstance().getTime();  
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");  
+	strDate = dateFormat.format(date);
+
+	// ORDER TYPE
 	System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
-	orderType = Integer.parseInt(reader.readLine());
-	//		CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
-	if (orderType != 1 || orderType != 2 || orderType != 3){
+	userInput = reader.readLine();
+	// validate user input
+	while (!userInput.equals("1") && !userInput.equals("2") && !userInput.equals("3")){
 		System.out.println("ERROR: I don't understand your input for: 'Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:'");
-		orderType = Integer.parseInt(reader.readLine());
+		userInput = reader.readLine();
 	}
-	// 		CHECK FOR TABLE NUMBER
-	if (orderType == 1){
+	// CASE: ORDER TYPE
+	if (userInput.equals("1")){
+		orderType = DBNinja.dine_in;
 		System.out.println("What is the table number for this order?");
 		tableNum = Integer.parseInt(reader.readLine());
+		setTableNum(tableNum);
+	}
+	if (userInput.equals("2") || userInput.equals("3")) {
+		if (userInput.equals("2")) {
+			orderType = DBNinja.pickup;
+		}
+		if (userInput.equals("3")) {
+			orderType = DBNinja.delivery;
+		}
+
+		// HANDLE CUSTOMER
+		System.out.println("Is this order for an existing customer? Answer y/n: ");
+		userInput = reader.readLine();
+
+		// if user input is existing customer
+		if (userInput.equals("y")) {
+			System.out.println("Here's a list of the current customers: ");
+			viewCustomers();
+			ArrayList <Customer> customerList = DBNinja.getCustomerList();
+			
+			// get and validate customer number
+			boolean custFound = false;
+			do {
+				System.out.println("Which customer is this order for? Enter ID Number:");
+				custID = Integer.parseInt(reader.readLine());
+				for (int i = 0; i < customerList.size(); i++) {
+					if (custID == customerList.get(i).getCustID()) {
+						custFound = true;
+						break;
+					}
+				}
+				if(custFound) break;
+
+				System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
+				userInput = reader.readLine();
+			} while(userInput.equals("y"));
+		}
+
+		// if user input is NOT an existing customer
+		if (userInput.equals("n")) {
+			custID = DBNinja.getLastCustomerID();
+			if(orderType.equals(DBNinja.pickup) || orderType.equals(DBNinja.delivery)) {
+				EnterCustomer();
+
+				// delivery add address to customer database
+				if(orderType.equals(DBNinja.delivery)) {
+					String houseNum, street, city, state, zip;
+					System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+					houseNum = reader.readLine();
+					System.out.println("What is the Street for this order? (e.g., Smile Street)");
+					street = reader.readLine();
+					System.out.println("What is the City for this order? (e.g., Greenville)");
+					city = reader.readLine();
+					System.out.println("What is the State for this order? (e.g., SC)");
+					state = reader.readLine();
+					System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+					zip = reader.readLine();
+					String addr = houseNum + " " + street + "/n" + city + "/n" + state + "/n" + zip;
+					
+					DBNinja.updateCustomerAddr(custID, addr);
+				}
+			}
+		}
 	}
 
-	// HANDLE CUSTOMER
-	System.out.println("Is this order for an existing customer? Answer y/n: ");
-	existingCus = reader.readLine();
-	// 		CHECK IF Y OR N IS ENTERED TO MOVE FORWARD
-	if (existingCus.equals("y") || existingCus.equals("n")) {
-		System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
-		existingCus = reader.readLine();;
-	}
-	// 		IF EXISTING CUSTOMER IS TRUE 
-	else if (existingCus.equals("y")) {
-		System.out.println("Here's a list of the current customers: ");
-		viewCustomers();
-		System.out.println("Which customer is this order for? Enter ID Number:");
-		custID = Integer.parseInt(reader.readLine());
+	Order o = new Order(newOrderID, custID, orderType, strDate, custPrice, busPrice, iscomplete);
+	System.out.println("new order built: " + o.toSimplePrint());
+
+	// ADDING PIZZAS TO ORDER
+	System.out.println("Let's build a pizza!");
+	do {
+		Pizza newPizza = buildPizza(newOrderID);
+		o.addPizza(newPizza);
+		System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
+		userInput = reader.readLine();
+	} while(!userInput.equals("-1"));
+
+	// ADDING DISCOUNTS TO ORDER
+	System.out.println("Do you want to add discounts to this order? Enter y/n?");
+	userInput = reader.readLine();
+	if(userInput.equals("y")) {
+		// print order discounts
+		ArrayList <Discount> currDiscountList = DBNinja.getDiscountList();
+		for(int i = 0; i < currDiscountList.size(); i++) {
+			System.out.println(currDiscountList.get(i).toString());
+		}
+		// enter a discount
+		do {
+			System.out.println("Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+			discountID = Integer.parseInt(reader.readLine());
+			if(discountID == -1) {
+				break;
+			}
+
+			Discount thisDiscount = currDiscountList.get(discountID - 1);
+			
+			// add order discount to order object
+			o.addDiscount(thisDiscount);
+			// add order discount to bridge table
+			DBNinja.useOrderDiscount(o, thisDiscount);
+		} while(discountID != -1);
 	}
 
-	//call order constructor and enter the order data, 
-	//call pizza constructor 
+	// ADDING ORDER TO DATABASE
+	System.out.println("order is added: " + o.toSimplePrint());
+	DBNinja.addOrder(o);
+
 		/*
 		 * EnterOrder should do the following:
 		 * 
@@ -142,21 +255,21 @@ public class Menu {
 		 */
 		
 		 // User Input Prompts...
-		System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
-		System.out.println("Is this order for an existing customer? Answer y/n: ");
-		System.out.println("Here's a list of the current customers: ");
-		System.out.println("Which customer is this order for? Enter ID Number:");
-		System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
-		System.out.println("What is the table number for this order?");
-		System.out.println("Let's build a pizza!");
-		System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
-		System.out.println("Do you want to add discounts to this order? Enter y/n?");
-		System.out.println("Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
-		System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
-		System.out.println("What is the Street for this order? (e.g., Smile Street)");
-		System.out.println("What is the City for this order? (e.g., Greenville)");
-		System.out.println("What is the State for this order? (e.g., SC)");
-		System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+		//System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
+		//System.out.println("Is this order for an existing customer? Answer y/n: ");
+		//System.out.println("Here's a list of the current customers: ");
+		//System.out.println("Which customer is this order for? Enter ID Number:");
+		//System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
+		//System.out.println("What is the table number for this order?");
+		// System.out.println("Let's build a pizza!");
+		// System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
+		// System.out.println("Do you want to add discounts to this order? Enter y/n?");
+		// System.out.println("Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+		// System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+		// System.out.println("What is the Street for this order? (e.g., Smile Street)");
+		// System.out.println("What is the City for this order? (e.g., Greenville)");
+		// System.out.println("What is the State for this order? (e.g., SC)");
+		// System.out.println("What is the Zip Code for this order? (e.g., 20605)");
 		
 		
 		System.out.println("Finished adding order...Returning to menu...");
@@ -169,11 +282,7 @@ public class Menu {
 		 * Simply print out all of the customers from the database. 
 		 */
 		DBNinja.getCustomerList().forEach(System.out::println); 
-		
-		
-		
-		
-		
+
 	}
 	
 
