@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import textio.TextIO;
+// import textio.TextIO;
 
 /*
  * This file is where the front end magic happens.
@@ -325,11 +325,16 @@ public class Menu {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		String orderOption = reader.readLine();
-		if (orderOption != "a" || orderOption != "b" || orderOption != "c" || orderOption != "d") {
+		if (!orderOption.equals("a") && !orderOption.equals("b") && !orderOption.equals("c") && !orderOption.equals("d")) {
 			System.out.println("I don't understand that input, returning to menu");
+			System.out.println(orderOption);
 			return;
 		}
-		if (orderOption == "a"){
+		if (orderOption.equals("a")){
+			if (DBNinja.getOrders(false) == null) {
+				System.out.println("No orders to display, returning to menu.");
+				return;
+			}
 			DBNinja.getOrders(false);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
@@ -342,7 +347,11 @@ public class Menu {
 				return;
 			}
 		}
-		if (orderOption == "b"){
+		if (orderOption.equals("b")){
+			if (DBNinja.getOrders(true) == null) {
+				System.out.println("No orders to display, returning to menu.");
+				return;
+			}
 			DBNinja.getOrders(true);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
@@ -356,7 +365,11 @@ public class Menu {
 			}
 		}
 
-		if (orderOption == "c"){
+		if (orderOption.equals("c")){
+			if (DBNinja.getClosedOrders(true) == null) {
+				System.out.println("No orders to display, returning to menu.");
+				return;
+			}
 			DBNinja.getClosedOrders(true);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
@@ -370,9 +383,14 @@ public class Menu {
 			}
 		}
 
-		if (orderOption == "d"){
+		if (orderOption.equals("d")){
+			
 			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
 			String option = reader.readLine();
+			if (DBNinja.getOrdersByDate(option) == null) {
+				System.out.println("No orders to display, returning to menu.");
+				return;
+			}
 			DBNinja.getOrdersByDate(option);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			option = reader.readLine();
@@ -387,12 +405,12 @@ public class Menu {
 		}
 		
 		// User Input Prompts...
-		System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
-		System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
-		System.out.println("I don't understand that input, returning to menu");
-		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
-		System.out.println("Incorrect entry, returning to menu.");
-		System.out.println("No orders to display, returning to menu.");
+		// System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
+		// System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
+		// System.out.println("I don't understand that input, returning to menu");
+		// System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+		// System.out.println("Incorrect entry, returning to menu.");
+		// System.out.println("No orders to display, returning to menu.");
 
 
 
@@ -409,13 +427,33 @@ public class Menu {
 		 * and allow the user to choose which of the incomplete orders they wish to mark as complete
 		 * 
 		 */
+		int id;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
-		
-		
-		// User Input Prompts...
-		System.out.println("There are no open orders currently... returning to menu...");
+
+		if (DBNinja.getOrders(true) == null ) {
+			System.out.println("There are no open orders currently... returning to menu...");
+		}
+		else{
+			DBNinja.getOrders(true).forEach(System.out::println); 
+		}
 		System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
-		System.out.println("Incorrect entry, not an option");
+		String optionID = reader.readLine();
+		id = Integer.parseInt(optionID);
+		while (DBNinja.getOrderbyID(id) == null){
+			System.out.println("Incorrect entry, not an option");
+			System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
+			optionID = reader.readLine();
+			id = Integer.parseInt(optionID);
+		}
+		
+		DBNinja.completeOrder(DBNinja.getOrderbyID(id));
+
+
+		// User Input Prompts...
+		// System.out.println("There are no open orders currently... returning to menu...");
+		// System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
+		// System.out.println("Incorrect entry, not an option");
 
 		
 		
@@ -697,10 +735,26 @@ public class Menu {
 		 * This method asks the use which report they want to see and calls the DBNinja method to print the appropriate report.
 		 * 
 		 */
-
-		// User Input Prompts...
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
-		System.out.println("I don't understand that input... returning to menu...");
+		String reportOption = reader.readLine();
+		if (!reportOption.equals("a") && !reportOption.equals("b") && !reportOption.equals("c")) {
+			System.out.println("I don't understand that input... returning to menu...");
+			return;
+		}
+		if (reportOption.equals("a")){
+			DBNinja.printToppingPopReport();
+		}
+		if (reportOption.equals("b")){
+			DBNinja.printProfitByPizzaReport();
+		}
+		if (reportOption.equals("c")){
+			DBNinja.printProfitByOrderType();
+		}
+
+		// // User Input Prompts...
+		// System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
+		// System.out.println("I don't understand that input... returning to menu...");
 
 	}
 

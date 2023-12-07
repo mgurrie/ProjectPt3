@@ -502,12 +502,12 @@ public final class DBNinja {
 		 * 
 		 */
 
-		String updateOrderComplete =
+		String updateOrderCompletion =
 		 "UPDATE Pizzeria.order " + 
 		 "SET OrderCompletion = (?) " +
 		 "WHERE OrderNum = (?)";
  
-		try (PreparedStatement ps = conn.prepareStatement(updateOrderComplete)) {
+		try (PreparedStatement ps = conn.prepareStatement(updateOrderCompletion)) {
 			System.out.println("Update order completion test: ");
 		
 			ps.setInt(1, 1);
@@ -545,10 +545,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (openOnly){
-				orderDate = "SELECT * FROM order WHERE OrderComplete = 0 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM Pizzeria.order WHERE OrderCompletion = 0 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM Pizzeria.order ORDER BY OrderNum;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
@@ -599,7 +599,7 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (closed){
-				orderDate = "SELECT * FROM order WHERE OrderComplete = 1 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM order WHERE OrderCompletion = 1 ORDER BY OrderNum;";
 			}
 			else {
 				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
