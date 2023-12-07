@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +69,9 @@ public class Menu {
 			case 8:// view reports
 				PrintReports();
 				break;
+			case 10: // TESTER (DELETE AT END)
+				buildPizza(1);
+				break;
 			}
 			PrintMenu();
 			option = reader.readLine();
@@ -88,16 +92,16 @@ public class Menu {
 
 	// CHECK FOR ORDER TYPE
 	System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
-	orderType = reader.read();
+	orderType = Integer.parseInt(reader.readLine());
 	//		CHECK IF 1,2,OR 3 IS ENTERED TO MOVE FORWARD
 	if (orderType != 1 || orderType != 2 || orderType != 3){
 		System.out.println("ERROR: I don't understand your input for: 'Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:'");
-		orderType = reader.read();
+		orderType = Integer.parseInt(reader.readLine());
 	}
 	// 		CHECK FOR TABLE NUMBER
 	if (orderType == 1){
 		System.out.println("What is the table number for this order?");
-		tableNum = reader.read();
+		tableNum = Integer.parseInt(reader.readLine());
 	}
 
 	// HANDLE CUSTOMER
@@ -113,7 +117,7 @@ public class Menu {
 		System.out.println("Here's a list of the current customers: ");
 		viewCustomers();
 		System.out.println("Which customer is this order for? Enter ID Number:");
-		custID = reader.read();
+		custID = Integer.parseInt(reader.readLine());
 	}
 
 	//call order constructor and enter the order data, 
@@ -179,11 +183,19 @@ public class Menu {
 		Customer cust;
 
 		System.out.println("What is this customer's name (first <space> last");
-		
+		String names = reader.readLine();
+		String [] names_split = names.split(" ");
+		String lname = names_split[1];
+		String fname = names_split[0];
+
 		System.out.println("What is this customer's phone number (##########) (No dash/space)");
+		String phone = reader.readLine();
 		
+		cust = new Customer(0, fname, lname, phone);
 
+		DBNinja.addCustomer(cust);
 
+		System.out.println("success: " + cust.toString());
 	}
 
 	// View any orders that are not marked as completed
@@ -285,33 +297,191 @@ public class Menu {
 		 * Once the discounts are added, we can return the pizza
 		 */
 
-		 Pizza ret = null;
+		Pizza ret = null;
 		
 		// User Input Prompts...
+		String size = "";
+		String crust = "";
+		int userInput = 0;
+
+		// BASE PIZZA
 		System.out.println("What size is the pizza?");
 		System.out.println("1."+DBNinja.size_s);
 		System.out.println("2."+DBNinja.size_m);
 		System.out.println("3."+DBNinja.size_l);
 		System.out.println("4."+DBNinja.size_xl);
 		System.out.println("Enter the corresponding number: ");
+
+		// set size
+		userInput = Integer.parseInt(reader.readLine());
+		switch(userInput) {
+			case 1:
+				size = DBNinja.size_s;
+				break;
+			case 2:
+				size = DBNinja.size_m;
+				break;
+			case 3:
+				size = DBNinja.size_l;
+				break;
+			case 4:
+				size = DBNinja.size_xl;
+				break;
+			default:
+				break;
+		}
+
 		System.out.println("What crust for this pizza?");
 		System.out.println("1."+DBNinja.crust_thin);
 		System.out.println("2."+DBNinja.crust_orig);
 		System.out.println("3."+DBNinja.crust_pan);
 		System.out.println("4."+DBNinja.crust_gf);
 		System.out.println("Enter the corresponding number: ");
+
+		// set crust
+		userInput = Integer.parseInt(reader.readLine());
+		switch(userInput) {
+		case 1:
+			size = DBNinja.crust_thin;
+			break;
+		case 2:
+			size = DBNinja.crust_orig;
+			break;
+		case 3:
+			size = DBNinja.crust_pan;
+			break;
+		case 4:
+			size = DBNinja.crust_gf;
+			break;
+		default:
+			break;
+		}
+
+		double baseCustPrice = DBNinja.getBaseCustPrice(size, crust);
+		double baseBusCost = DBNinja.getBaseBusPrice(size, crust);
+
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+    	Date date = new Date();  
+		
+		ret = new Pizza(0, size, crust, orderID, "incomplete", 
+			formatter.format(date), baseCustPrice, baseBusCost);
+
+		// TEST
+		System.out.println(ret.toString());
+
+
+
+		// TOPPINGS
+		ArrayList<Topping> currentToppings = DBNinja.getToppingList();
+		userInput = 0;
+		Topping thisTopping;
+		String extraToppingInput;
+		boolean extraToppingBool = false;
+		double currInv = 0;
+		double newInv = 0;
+		double minInv = 0;
+
 		System.out.println("Available Toppings:");
+		// print toppings
+		for (int i=0; i<currentToppings.size(); i++) {
+			Topping current = currentToppings.get(i);
+			System.out.println(current.toString());
+		}
+
 		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
-		System.out.println("Do you want to add extra topping? Enter y/n");
-		System.out.println("We don't have enough of that topping to add it...");
-		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
+		
+		
+
+		do {
+			// user inputs toppings
+			userInput = Integer.parseInt(reader.readLine());
+			thisTopping = currentToppings.get(userInput-1);
+
+			if(userInput == -1) break;
+
+			// populate min, current and new inventory
+			minInv = thisTopping.getMinINVT();
+			currInv = thisTopping.getCurINVT();
+			switch(size) {
+			case DBNinja.size_s:
+				newInv = thisTopping.getPerAMT();
+				break;
+			case DBNinja.size_m:
+				newInv = thisTopping.getMedAMT();
+				break;
+			case DBNinja.size_l:
+				newInv = thisTopping.getLgAMT();
+				break;
+			case DBNinja.size_xl:
+				newInv = thisTopping.getXLAMT();
+				break;
+			default:
+				break;
+			}
+
+			// check if topping inv is enough
+			if(currInv - newInv < minInv) {
+				System.out.println("We don't have enough of that topping to add it...");
+				continue;
+			}
+
+			// get extra topping
+			System.out.println("Do you want to add extra topping? Enter y/n");
+			extraToppingInput = reader.readLine();
+			if(extraToppingInput.equals("y")) {
+				// check if topping inv is enough
+				if((currInv - (2*newInv)) < minInv) {
+					System.out.println("We don't have enough of that topping to add it...");
+					continue;
+				}
+				else {
+					extraToppingBool = true;
+				}
+			}
+			
+			// add topping to pizza in database and object
+			ret.addToppings(thisTopping, extraToppingBool);
+			DBNinja.useTopping(ret, null, false);
+
+			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
+
+		} while(userInput != -1);
+
+		// TEST 
+		System.out.println(ret.toString());
+		
+		userInput = 0;
+
+
+
+		// DISCOUNTS
+		ArrayList<Discount> currentDiscounts = DBNinja.getDiscountList();
+		Discount thisDiscount;
+
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
-		System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
-		System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
-	
+		// get user input
+		String stringUserInput = reader.readLine();
+		if(stringUserInput.equals("y")) {
+			do {
+				System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+				// display discounts
+				for (int i=0; i<currentDiscounts.size(); i++) {
+					Discount current = currentDiscounts.get(i);
+					System.out.println(current.toString());
+				}
+				// get user input
+				userInput = Integer.parseInt(reader.readLine());
+				// add discount to pizza db and object
+				thisDiscount = currentDiscounts.get(userInput-1);
+				ret.addDiscounts(thisDiscount);
+				DBNinja.usePizzaDiscount(ret, thisDiscount);
 		
-		
-		
+				System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
+			} while(userInput != -1);
+		}
+
+		// TEST 
+		System.out.println(ret.toString());
 		
 		return ret;
 	}

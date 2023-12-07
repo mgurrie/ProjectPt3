@@ -171,12 +171,11 @@ public final class DBNinja {
 		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
 		System.out.println("Insert test: ");
 
-		// use pizza discount
 	
 		ps.setString(1, p.getSize());
 		ps.setString(2, p.getPizzaState());
-		ps.setDouble(3, p.getCustPrice());
-		ps.setDouble(4, p.getBusPrice());
+		ps.setDouble(3, newCustPrice);
+		ps.setDouble(4, newBusCost);
 		ps.setString(5, p.getCrustType());
 		ps.setString(6, p.getPizzaDate());
 		ps.setInt(7, p.getOrderID());
