@@ -288,8 +288,10 @@ public class Menu {
 		 * and allow the user to choose which of the incomplete orders they wish to mark as complete
 		 * 
 		 */
-		
-		
+		if (DBNinja.getOrders(true) == null ) {
+			System.out.println("There are no open orders currently... returning to menu...");
+		}
+		 DBNinja.getOrders(true);
 		
 		// User Input Prompts...
 		System.out.println("There are no open orders currently... returning to menu...");
