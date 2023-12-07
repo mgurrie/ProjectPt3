@@ -164,7 +164,7 @@ public class Menu {
 		/*
 		 * Simply print out all of the customers from the database. 
 		 */
-		
+		DBNinja.getCustomerList().forEach(System.out::println); 
 		
 		
 		
@@ -225,6 +225,36 @@ public class Menu {
 			DBNinja.getOrders(true);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
+			id = Integer.parseInt(option);
+			if (id == -1){
+				//exit
+			}
+			else{
+				DBNinja.getOrderbyID(id);
+				//exit
+			}
+		}
+
+		if (orderOption == "c"){
+			DBNinja.getClosedOrders(true);
+			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+			String option = reader.readLine();
+			id = Integer.parseInt(option);
+			if (id == -1){
+				//exit
+			}
+			else{
+				DBNinja.getOrderbyID(id);
+				//exit
+			}
+		}
+
+		if (orderOption == "d"){
+			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
+			String option = reader.readLine();
+			DBNinja.getOrdersByDate(option);
+			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+			option = reader.readLine();
 			id = Integer.parseInt(option);
 			if (id == -1){
 				//exit

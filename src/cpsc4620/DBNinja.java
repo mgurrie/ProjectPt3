@@ -481,6 +481,60 @@ public final class DBNinja {
 		return ordersBy;
 	}
 
+	public static ArrayList<Order> getClosedOrders(boolean closed) throws SQLException, IOException {
+		connect_to_db();
+		/*
+		 * Return an arraylist of all of the orders.
+		 * 	openOnly == true => only return a list of open (ie orders that have not been marked as completed)
+		 *           == false => return a list of all the orders in the database
+		 * Remember that in Java, we account for supertypes and subtypes
+		 * which means that when we create an arrayList of orders, that really
+		 * means we have an arrayList of dineinOrders, deliveryOrders, and pickupOrders.
+		 * 
+		 * Don't forget to order the data coming from the database appropriately.
+		 * 
+		 */
+		connect_to_db();
+		ArrayList<Order> ordersBy = new ArrayList<>();
+		//Needs to be fixed
+		String orderDate;
+		try {
+			if (closed){
+				orderDate = "SELECT * FROM order WHERE OrderComplete = 1 ORDER BY OrderNum;";
+			}
+			else {
+				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+			}
+			
+			PreparedStatement ready = conn.prepareStatement(orderDate);
+			ResultSet returnQ = ready.executeQuery(orderDate);
+
+			while (returnQ.next()) {
+				int orderID = returnQ.getInt(1);
+				int custID = returnQ.getInt(2);
+				String orderType = returnQ.getString(3);
+				String datex = returnQ.getString(4);
+				double custPrice = returnQ.getDouble(5);
+				double busPrice = returnQ.getDouble(6);
+				int iscomplete = returnQ.getInt(7);
+				
+				ordersBy.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
+
+			}
+
+		} catch (SQLException error) {
+			System.out.println("Error getting all orders");
+			while (error != null) {
+				System.out.println("Message     : " + error.getMessage());
+				error = error.getNextException();
+			}
+		}
+
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+		return ordersBy;
+	}
+
 	
 	public static Order getLastOrder() throws SQLException, IOException {
 		/*
