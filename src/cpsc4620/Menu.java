@@ -314,18 +314,19 @@ public class Menu {
 
 		// set size
 		userInput = Integer.parseInt(reader.readLine());
+
 		switch(userInput) {
 			case 1:
-				size = DBNinja.size_s;
+				size = DBNinja.size_s.toLowerCase();
 				break;
 			case 2:
-				size = DBNinja.size_m;
+				size = DBNinja.size_m.toLowerCase();
 				break;
 			case 3:
-				size = DBNinja.size_l;
+				size = DBNinja.size_l.toLowerCase();
 				break;
 			case 4:
-				size = DBNinja.size_xl;
+				size = DBNinja.size_xl.toLowerCase();
 				break;
 			default:
 				break;
@@ -342,39 +343,42 @@ public class Menu {
 		userInput = Integer.parseInt(reader.readLine());
 		switch(userInput) {
 		case 1:
-			size = DBNinja.crust_thin;
+			crust = DBNinja.crust_thin.toLowerCase();
 			break;
 		case 2:
-			size = DBNinja.crust_orig;
+			crust = DBNinja.crust_orig.toLowerCase();
 			break;
 		case 3:
-			size = DBNinja.crust_pan;
+			crust = DBNinja.crust_pan.toLowerCase();
 			break;
 		case 4:
-			size = DBNinja.crust_gf;
+			crust = DBNinja.crust_gf.toLowerCase();
 			break;
 		default:
 			break;
 		}
 
+		// getting information from db
 		double baseCustPrice = DBNinja.getBaseCustPrice(size, crust);
 		double baseBusCost = DBNinja.getBaseBusPrice(size, crust);
 
+		// getting time
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
     	Date date = new Date();  
 		
-		ret = new Pizza(0, size, crust, orderID, "incomplete", 
+		// base pizza information
+		System.out.println("new pizza id = " + DBNinja.getLastPizzaID() + 1);
+		ret = new Pizza(DBNinja.getLastPizzaID() + 1, size, crust, orderID, "incomplete", 
 			formatter.format(date), baseCustPrice, baseBusCost);
 
 		// TEST
-		System.out.println(ret.toString());
-
-
+		System.out.println(ret.toString() + "\n");
+		
 
 		// TOPPINGS
 		ArrayList<Topping> currentToppings = DBNinja.getToppingList();
 		userInput = 0;
-		Topping thisTopping;
+		ArrayList<Topping> thisTopping = new ArrayList<>();
 		String extraToppingInput;
 		boolean extraToppingBool = false;
 		double currInv = 0;
@@ -387,33 +391,31 @@ public class Menu {
 			Topping current = currentToppings.get(i);
 			System.out.println(current.toString());
 		}
-
-		System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 		
-		
-
+		int i = 0;
 		do {
+			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
+
 			// user inputs toppings
 			userInput = Integer.parseInt(reader.readLine());
-			thisTopping = currentToppings.get(userInput-1);
 
 			if(userInput == -1) break;
 
 			// populate min, current and new inventory
-			minInv = thisTopping.getMinINVT();
-			currInv = thisTopping.getCurINVT();
+			minInv = currentToppings.get(userInput-1).getMinINVT();
+			currInv = currentToppings.get(userInput-1).getCurINVT();
 			switch(size) {
 			case DBNinja.size_s:
-				newInv = thisTopping.getPerAMT();
+				newInv = currentToppings.get(userInput-1).getPerAMT();
 				break;
 			case DBNinja.size_m:
-				newInv = thisTopping.getMedAMT();
+				newInv = currentToppings.get(userInput-1).getMedAMT();
 				break;
 			case DBNinja.size_l:
-				newInv = thisTopping.getLgAMT();
+				newInv = currentToppings.get(userInput-1).getLgAMT();
 				break;
 			case DBNinja.size_xl:
-				newInv = thisTopping.getXLAMT();
+				newInv = currentToppings.get(userInput-1).getXLAMT();
 				break;
 			default:
 				break;
@@ -424,6 +426,9 @@ public class Menu {
 				System.out.println("We don't have enough of that topping to add it...");
 				continue;
 			}
+
+			thisTopping.add(currentToppings.get(userInput-1));
+			System.out.println("enough top. current topping = " + thisTopping.get(i).toString());
 
 			// get extra topping
 			System.out.println("Do you want to add extra topping? Enter y/n");
@@ -439,16 +444,17 @@ public class Menu {
 				}
 			}
 			
-			// add topping to pizza in database and object
-			ret.addToppings(thisTopping, extraToppingBool);
-			DBNinja.useTopping(ret, null, false);
+			// add topping to pizza in object
+			ret.addToppings(thisTopping.get(i), extraToppingBool);
 
-			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
+			// TEST 
+			System.out.println(ret.toString());
+
+			i++;
 
 		} while(userInput != -1);
 
-		// TEST 
-		System.out.println(ret.toString());
+		
 		
 		userInput = 0;
 
@@ -456,32 +462,47 @@ public class Menu {
 
 		// DISCOUNTS
 		ArrayList<Discount> currentDiscounts = DBNinja.getDiscountList();
-		Discount thisDiscount;
+		ArrayList <Discount> thisDiscount = new ArrayList<>();
 
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		// get user input
 		String stringUserInput = reader.readLine();
 		if(stringUserInput.equals("y")) {
+			int j = 0;
 			do {
 				System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				// display discounts
-				for (int i=0; i<currentDiscounts.size(); i++) {
-					Discount current = currentDiscounts.get(i);
+				for (int l=0; l<currentDiscounts.size(); l++) {
+					Discount current = currentDiscounts.get(l);
 					System.out.println(current.toString());
 				}
 				// get user input
 				userInput = Integer.parseInt(reader.readLine());
-				// add discount to pizza db and object
-				thisDiscount = currentDiscounts.get(userInput-1);
-				ret.addDiscounts(thisDiscount);
-				DBNinja.usePizzaDiscount(ret, thisDiscount);
+				if (userInput == -1) break;
+
+				// add discount to pizza object
+				thisDiscount.add(currentDiscounts.get(userInput-1));
+				ret.addDiscounts(thisDiscount.get(j));
+				j++;
 		
 				System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
-			} while(userInput != -1);
+				stringUserInput = reader.readLine();
+				if(stringUserInput.equals("n")) break;
+
+			} while(userInput != -1 | !stringUserInput.equals("y"));
 		}
 
 		// TEST 
 		System.out.println(ret.toString());
+
+
+		// add pizza to database
+		DBNinja.addPizza(ret);
+		for (int k = 0; k < thisTopping.size(); k++)
+			DBNinja.useTopping(ret, thisTopping.get(k), ret.getIsDoubleArray()[k]);
+		for (int m = 0; m < thisDiscount.size(); m++)
+			DBNinja.usePizzaDiscount(ret, thisDiscount.get(m));
+		
 		
 		return ret;
 	}
