@@ -218,7 +218,7 @@ public class Menu {
 		String orderOption = reader.readLine();
 		if (orderOption != "a" || orderOption != "b" || orderOption != "c" || orderOption != "d") {
 			System.out.println("I don't understand that input, returning to menu");
-			//exit
+			return;
 		}
 		if (orderOption == "a"){
 			DBNinja.getOrders(false);
@@ -226,11 +226,11 @@ public class Menu {
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
 			if (id == -1){
-				//exit
+				return;
 			}
 			else{
 				DBNinja.getOrderbyID(id);
-				//exit
+				return;
 			}
 		}
 		if (orderOption == "b"){
@@ -239,11 +239,11 @@ public class Menu {
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
 			if (id == -1){
-				//exit
+				return;
 			}
 			else{
 				DBNinja.getOrderbyID(id);
-				//exit
+				return;
 			}
 		}
 
@@ -253,11 +253,11 @@ public class Menu {
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
 			if (id == -1){
-				//exit
+				return;
 			}
 			else{
 				DBNinja.getOrderbyID(id);
-				//exit
+				return;
 			}
 		}
 
@@ -269,11 +269,11 @@ public class Menu {
 			option = reader.readLine();
 			id = Integer.parseInt(option);
 			if (id == -1){
-				//exit
+				return;
 			}
 			else{
 				DBNinja.getOrderbyID(id);
-				//exit
+				return;
 			}
 		}
 		
