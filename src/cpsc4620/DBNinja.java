@@ -667,10 +667,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (closed){
-				orderDate = "SELECT * FROM 'order' WHERE OrderCompletion = 1 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM `order` WHERE OrderCompletion = 1 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM 'order';";
+				orderDate = "SELECT * FROM `order`;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
@@ -714,7 +714,7 @@ public final class DBNinja {
 
 		try {
 
-			String order = "SELECT * FROM order ORDER BY OrderNum DESC LIMIT 1";
+			String order = "SELECT * FROM `order` ORDER BY OrderNum DESC LIMIT 1";
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(order);
 
@@ -746,7 +746,7 @@ public final class DBNinja {
 
 		try {
 
-			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
+			String orderDate = "SELECT * FROM `order` WHERE OrderDate = " + date + " ORDER BY OrderDate;";
 			PreparedStatement ready = conn.prepareStatement(orderDate);
 			ResultSet returnQ = ready.executeQuery(orderDate);
 
@@ -787,7 +787,7 @@ public final class DBNinja {
 
 		try {
 
-			String order = "SELECT * FROM order WHERE OrderNum = " + id + ";";
+			String order = "SELECT * FROM `order` WHERE OrderNum = " + id + ";";
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(order);
 
