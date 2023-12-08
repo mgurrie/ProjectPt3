@@ -613,10 +613,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (openOnly){
-				orderDate = "SELECT * FROM order WHERE OrderCompletion = 0 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM `order` WHERE OrderCompletion = 0 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM `order` ORDER BY OrderNum;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
@@ -667,10 +667,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (closed){
-				orderDate = "SELECT * FROM order WHERE OrderCompletion = 1 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM 'order' WHERE OrderCompletion = 1 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order;";
+				orderDate = "SELECT * FROM 'order';";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);

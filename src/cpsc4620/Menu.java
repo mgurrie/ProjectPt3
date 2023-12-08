@@ -748,7 +748,6 @@ public class Menu {
 		// // User Input Prompts...
 		// System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
 		// System.out.println("I don't understand that input... returning to menu...");
-
 	}
 
 	//Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
