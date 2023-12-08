@@ -216,6 +216,7 @@ public class Menu {
 		
 		// ADDING ORDER TO DATABASE
 		Order o = new Order(newOrderID, custID, orderType, strDate, custPrice, busPrice, iscomplete);
+		System.out.println(o.toSimplePrint()); //TEST
 		DBNinja.addOrder(o);
 
 
@@ -572,9 +573,6 @@ public class Menu {
 		//System.out.println("new pizza id = " + DBNinja.getLastPizzaID() + 1);
 		ret = new Pizza(DBNinja.getLastPizzaID() + 1, size, crust, orderID, "incomplete", 
 			formatter.format(date), baseCustPrice, baseBusCost);
-
-		// TEST
-		//System.out.println(ret.toString() + "\n");
 		
 
 		// TOPPINGS
@@ -649,9 +647,6 @@ public class Menu {
 			// add topping to pizza in object
 			ret.addToppings(thisTopping.get(i), extraToppingBool);
 
-			// TEST 
-			//System.out.println(ret.toString());
-
 			i++;
 
 		} while(userInput != -1);
@@ -694,8 +689,6 @@ public class Menu {
 			} while(userInput != -1 | !stringUserInput.equals("y"));
 		}
 
-		// TEST 
-		//System.out.println(ret.toString());
 
 		return ret;
 	}
