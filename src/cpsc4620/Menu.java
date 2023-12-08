@@ -312,7 +312,7 @@ public class Menu {
 			return;
 		}
 		if (orderOption.equals("a")){
-			if (DBNinja.getOrders(false) == null) {
+			if (DBNinja.getOrders(false).size() == 0) {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
@@ -329,7 +329,7 @@ public class Menu {
 			}
 		}
 		if (orderOption.equals("b")){
-			if (DBNinja.getOrders(true) == null) {
+			if (DBNinja.getOrders(true).size() == 0) {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
@@ -347,7 +347,7 @@ public class Menu {
 		}
 
 		if (orderOption.equals("c")){
-			if (DBNinja.getClosedOrders(true) == null) {
+			if (DBNinja.getClosedOrders(true).size() == 0) {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
@@ -368,7 +368,7 @@ public class Menu {
 			
 			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
 			String option = reader.readLine();
-			if (DBNinja.getOrdersByDate(option) == null) {
+			if (DBNinja.getOrdersByDate(option).size() == 0) {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
