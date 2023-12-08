@@ -72,7 +72,7 @@ public class Menu {
 				PrintReports();
 				break;
 			case 10: // TESTER (DELETE AT END)
-				buildPizza(1);
+				autograder_compilation_check();
 				break;
 			}
 			PrintMenu();
@@ -779,7 +779,7 @@ public class Menu {
 	private static void autograder_compilation_check() {
 
 		try {
-			Order o = null;
+			Order o = (null);
 			Pizza p = null;
 			Topping t = null;
 			Discount d = null;
