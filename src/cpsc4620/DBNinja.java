@@ -96,8 +96,6 @@ public final class DBNinja {
 				ps.setNull(6, Types.NULL);
 
 			ps.executeUpdate();
-
-			System.out.println("test order " + o.toSimplePrint());
 		
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -113,8 +111,6 @@ public final class DBNinja {
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
-
-			System.out.println("test: " + o.getOrderID() + " " + Menu.getTableNum()); // TEST
 
 			ps.setInt(1, o.getOrderID());
 			ps.setInt(2, Menu.getTableNum());
@@ -215,7 +211,7 @@ public final class DBNinja {
 
 		connect_to_db();
 		String update =
-         "UPDATE `Pizzeria`.`order` " + 
+         "UPDATE `order` " + 
          "SET OrderCustPrice = (?), OrderBusinessCost = (?) " +
          "WHERE OrderNum = (?)";
         try (PreparedStatement ps = conn.prepareStatement(update)) {
