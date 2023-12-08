@@ -613,10 +613,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (openOnly){
-				orderDate = "SELECT * FROM order WHERE OrderCompletion = 0;";
+				orderDate = "SELECT * FROM `order` WHERE OrderCompletion = 0 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order;";
+				orderDate = "SELECT * FROM `order` ORDER BY OrderNum;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
@@ -624,12 +624,12 @@ public final class DBNinja {
 
 			while (returnQ.next()) {
 				int orderID = returnQ.getInt(1);
-				int custID = returnQ.getInt(2);
-				String orderType = returnQ.getString(3);
+				int custID = returnQ.getInt(8);
+				String orderType = returnQ.getString(2);
 				String datex = returnQ.getString(4);
-				double custPrice = returnQ.getDouble(5);
+				double custPrice = returnQ.getDouble(7);
 				double busPrice = returnQ.getDouble(6);
-				int iscomplete = returnQ.getInt(7);
+				int iscomplete = returnQ.getInt(3);
 				
 				ordersBy.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
 
@@ -667,10 +667,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (closed){
-				orderDate = "SELECT * FROM order WHERE OrderCompletion = 1;";
+				orderDate = "SELECT * FROM `order` WHERE OrderCompletion = 1 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order;";
+				orderDate = "SELECT * FROM `order`;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
@@ -678,12 +678,12 @@ public final class DBNinja {
 
 			while (returnQ.next()) {
 				int orderID = returnQ.getInt(1);
-				int custID = returnQ.getInt(2);
-				String orderType = returnQ.getString(3);
+				int custID = returnQ.getInt(8);
+				String orderType = returnQ.getString(2);
 				String datex = returnQ.getString(4);
-				double custPrice = returnQ.getDouble(5);
+				double custPrice = returnQ.getDouble(7);
 				double busPrice = returnQ.getDouble(6);
-				int iscomplete = returnQ.getInt(7);
+				int iscomplete = returnQ.getInt(3);
 				
 				ordersBy.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
 
@@ -714,7 +714,7 @@ public final class DBNinja {
 
 		try {
 
-			String order = "SELECT * FROM order ORDER BY OrderNum DESC LIMIT 1";
+			String order = "SELECT * FROM `order` ORDER BY OrderNum DESC LIMIT 1";
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(order);
 
@@ -746,18 +746,18 @@ public final class DBNinja {
 
 		try {
 
-			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
+			String orderDate = "SELECT * FROM `order` WHERE OrderDate = " + date + " ORDER BY OrderDate;";
 			PreparedStatement ready = conn.prepareStatement(orderDate);
 			ResultSet returnQ = ready.executeQuery(orderDate);
 
 			while (returnQ.next()) {
 				int orderID = returnQ.getInt(1);
-				int custID = returnQ.getInt(2);
-				String orderType = returnQ.getString(3);
+				int custID = returnQ.getInt(8);
+				String orderType = returnQ.getString(2);
 				String datex = returnQ.getString(4);
-				double custPrice = returnQ.getDouble(5);
+				double custPrice = returnQ.getDouble(7);
 				double busPrice = returnQ.getDouble(6);
-				int iscomplete = returnQ.getInt(7);
+				int iscomplete = returnQ.getInt(3);
 				
 				ordersByDate.add(new Order(orderID, custID, orderType, datex, custPrice, busPrice, iscomplete));
 
@@ -787,7 +787,7 @@ public final class DBNinja {
 
 		try {
 
-			String order = "SELECT * FROM order WHERE OrderNum = " + id + ";";
+			String order = "SELECT * FROM `order` WHERE OrderNum = " + id + ";";
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(order);
 

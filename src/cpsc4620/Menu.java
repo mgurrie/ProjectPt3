@@ -337,7 +337,7 @@ public class Menu {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
-			DBNinja.getOrders(false);
+			DBNinja.getOrders(false).forEach(System.out::println);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
@@ -345,7 +345,7 @@ public class Menu {
 				return;
 			}
 			else{
-				DBNinja.getOrderbyID(id);
+				System.out.println(DBNinja.getOrderbyID(id));
 				return;
 			}
 		}
@@ -354,7 +354,7 @@ public class Menu {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
-			DBNinja.getOrders(true);
+			DBNinja.getOrders(true).forEach(System.out::println);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
@@ -362,7 +362,7 @@ public class Menu {
 				return;
 			}
 			else{
-				DBNinja.getOrderbyID(id);
+				System.out.println(DBNinja.getOrderbyID(id));
 				return;
 			}
 		}
@@ -372,7 +372,7 @@ public class Menu {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
-			DBNinja.getClosedOrders(true);
+			DBNinja.getClosedOrders(true).forEach(System.out::println);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			String option = reader.readLine();
 			id = Integer.parseInt(option);
@@ -380,7 +380,7 @@ public class Menu {
 				return;
 			}
 			else{
-				DBNinja.getOrderbyID(id);
+				System.out.println(DBNinja.getOrderbyID(id));
 				return;
 			}
 		}
@@ -393,7 +393,7 @@ public class Menu {
 				System.out.println("No orders to display, returning to menu.");
 				return;
 			}
-			DBNinja.getOrdersByDate(option);
+			DBNinja.getOrdersByDate(option).forEach(System.out::println);
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			option = reader.readLine();
 			id = Integer.parseInt(option);
@@ -401,7 +401,7 @@ public class Menu {
 				return;
 			}
 			else{
-				DBNinja.getOrderbyID(id);
+				System.out.println(DBNinja.getOrderbyID(id));
 				return;
 			}
 		}
@@ -748,7 +748,6 @@ public class Menu {
 		// // User Input Prompts...
 		// System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
 		// System.out.println("I don't understand that input... returning to menu...");
-
 	}
 
 	//Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
