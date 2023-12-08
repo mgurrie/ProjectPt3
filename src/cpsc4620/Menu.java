@@ -112,7 +112,7 @@ public class Menu {
 
 	// ORDER DATE
 	Date date = Calendar.getInstance().getTime();  
-	DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");  
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
 	strDate = dateFormat.format(date);
 
 	// ORDER TYPE
@@ -193,17 +193,25 @@ public class Menu {
 		}
 	}
 
+	
+	// ADDING ORDER TO DATABASE
 	Order o = new Order(newOrderID, custID, orderType, strDate, custPrice, busPrice, iscomplete);
-	System.out.println("new order built: " + o.toSimplePrint());
+	//System.out.println("order is added: " + o.toSimplePrint());
+	DBNinja.addOrder(o);
+	//System.out.println("new order built: " + o.toSimplePrint());
+
 
 	// ADDING PIZZAS TO ORDER
 	System.out.println("Let's build a pizza!");
 	do {
 		Pizza newPizza = buildPizza(newOrderID);
 		o.addPizza(newPizza);
+		DBNinja.addPizza(newPizza);
 		System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
 		userInput = reader.readLine();
 	} while(!userInput.equals("-1"));
+
+	System.out.println("made it out\n");
 
 	// ADDING DISCOUNTS TO ORDER
 	System.out.println("Do you want to add discounts to this order? Enter y/n?");
@@ -224,16 +232,10 @@ public class Menu {
 
 			Discount thisDiscount = currDiscountList.get(discountID - 1);
 			
-			// add order discount to order object
-			o.addDiscount(thisDiscount);
 			// add order discount to bridge table
 			DBNinja.useOrderDiscount(o, thisDiscount);
 		} while(discountID != -1);
 	}
-
-	// ADDING ORDER TO DATABASE
-	System.out.println("order is added: " + o.toSimplePrint());
-	DBNinja.addOrder(o);
 
 		/*
 		 * EnterOrder should do the following:
@@ -304,7 +306,7 @@ public class Menu {
 
 		DBNinja.addCustomer(cust);
 
-		System.out.println("success: " + cust.toString());
+		//System.out.println("success: " + cust.toString());
 	}
 
 	// View any orders that are not marked as completed
@@ -588,12 +590,12 @@ public class Menu {
     	Date date = new Date();  
 		
 		// base pizza information
-		System.out.println("new pizza id = " + DBNinja.getLastPizzaID() + 1);
+		//System.out.println("new pizza id = " + DBNinja.getLastPizzaID() + 1);
 		ret = new Pizza(DBNinja.getLastPizzaID() + 1, size, crust, orderID, "incomplete", 
 			formatter.format(date), baseCustPrice, baseBusCost);
 
 		// TEST
-		System.out.println(ret.toString() + "\n");
+		//System.out.println(ret.toString() + "\n");
 		
 
 		// TOPPINGS
@@ -649,7 +651,7 @@ public class Menu {
 			}
 
 			thisTopping.add(currentToppings.get(userInput-1));
-			System.out.println("enough top. current topping = " + thisTopping.get(i).toString());
+			//System.out.println("enough top. current topping = " + thisTopping.get(i).toString());
 
 			// get extra topping
 			System.out.println("Do you want to add extra topping? Enter y/n");
@@ -669,7 +671,7 @@ public class Menu {
 			ret.addToppings(thisTopping.get(i), extraToppingBool);
 
 			// TEST 
-			System.out.println(ret.toString());
+			//System.out.println(ret.toString());
 
 			i++;
 
@@ -714,17 +716,8 @@ public class Menu {
 		}
 
 		// TEST 
-		System.out.println(ret.toString());
+		//System.out.println(ret.toString());
 
-
-		// add pizza to database
-		DBNinja.addPizza(ret);
-		for (int k = 0; k < thisTopping.size(); k++)
-			DBNinja.useTopping(ret, thisTopping.get(k), ret.getIsDoubleArray()[k]);
-		for (int m = 0; m < thisDiscount.size(); m++)
-			DBNinja.usePizzaDiscount(ret, thisDiscount.get(m));
-		
-		
 		return ret;
 	}
 	

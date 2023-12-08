@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.omg.CORBA.INTERNAL;
+
 /*
  * This file is where most of your code changes will occur You will write the code to retrieve
  * information from the database, or save information to the database
@@ -75,11 +77,10 @@ public final class DBNinja {
 		 "VALUES (?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertOrder)) {
-		System.out.println("Insert test: ");
+		//System.out.println("Insert test: ");
 	
 		ps.setString(1, o.getOrderType());
 		ps.setInt(2, o.getIsComplete());
-
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			java.util.Date utilDate = sdf.parse(o.getDate());
@@ -89,19 +90,23 @@ public final class DBNinja {
             // Handle the exception if the string is not in the expected format
             e.printStackTrace();
         }
-
 		ps.setDouble(4, o.getBusPrice());
 		ps.setDouble(5, o.getCustPrice());
-		ps.setDouble(6, o.getCustID());
+		if(o.getCustID() != 0) 
+			ps.setDouble(6, o.getCustID());
+		else
+			ps.setNull(6, Types.NULL);
 		ps.executeUpdate();
 	
-		System.out.println("success order\n");
-		System.out.println();
+		//System.out.println("success order\n");
+		//System.out.println();
 	
 		} catch (SQLException e) {
 		System.out.println(e);
 		}
 
+
+		// UPDATING TYPE TABLES
 		String insertOrderType;
 		// update dine in table
 		if(Objects.equals(o.getOrderType(), dine_in)) {
@@ -180,24 +185,65 @@ public final class DBNinja {
 		 "VALUES (?, ?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
-		System.out.println("Insert test: ");
-
-	
-		ps.setString(1, p.getSize());
-		ps.setString(2, p.getPizzaState());
-		ps.setDouble(3, p.getCustPrice());
-		ps.setDouble(4, p.getBusPrice());
-		ps.setString(5, p.getCrustType());
-		ps.setString(6, p.getPizzaDate());
-		ps.setInt(7, p.getOrderID());
-		ps.executeUpdate();
-	
-		System.out.println(p.toString());
-		System.out.println();
+			//System.out.println("Insert test: ");
+		
+			ps.setString(1, p.getSize());
+			ps.setString(2, p.getPizzaState());
+			ps.setDouble(3, p.getCustPrice());
+			ps.setDouble(4, p.getBusPrice());
+			ps.setString(5, p.getCrustType());
+			ps.setString(6, p.getPizzaDate());
+			ps.setInt(7, p.getOrderID());
+			ps.executeUpdate();
+		
+			System.out.println(p.toString());
+			System.out.println();
 	
 		} catch (SQLException e) {
-		System.out.println(e);
+			System.out.println(e);
 		}
+
+		// add pizza toppings and discounts
+		for (int k = 0; k < p.getToppings().size(); k++)
+			useTopping(p, p.getToppings().get(k), p.getIsDoubleArray()[k]);
+		for (int m = 0; m < p.getDiscounts().size(); m++) 
+			usePizzaDiscount(p, p.getDiscounts().get(m));
+
+		// update order cust prices and bus costs
+		updateOrderCosts(p);
+		
+		//DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+	}
+
+	public static void updateOrderCosts(Pizza p) throws SQLException, IOException {
+
+		/*
+		 * helper function to update costs when adding pizza
+		 */
+
+
+		connect_to_db();
+		String update =
+         "UPDATE `Pizzeria`.`order` " + 
+         "SET OrderCustPrice = (?), OrderBusinessCost = (?) " +
+         "WHERE OrderNum = (?)";
+        try (PreparedStatement ps = conn.prepareStatement(update)) {
+			double newOrderCustPrice = getOrderbyID(p.getOrderID()).getCustPrice() + p.getCustPrice();
+			double newOrderBusCost = getOrderbyID(p.getOrderID()).getBusPrice() + p.getBusPrice();
+        
+            ps.setDouble(1, newOrderCustPrice);
+            ps.setDouble(2, newOrderBusCost);
+            ps.setInt(3, p.getOrderID());
+            ps.executeUpdate();
+        
+            System.out.println("updated order costs: " + newOrderCustPrice + " " + newOrderBusCost);
+            System.out.println();
+    
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
 		
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -240,7 +286,7 @@ public final class DBNinja {
 		double prevInv = 0;
 		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
 		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {
-			System.out.println("Get ToppingInv test: ");
+			//System.out.println("Get ToppingInv test: ");
 		
 			ps.setInt(1, t.getTopID());
 			
@@ -264,7 +310,6 @@ public final class DBNinja {
 			System.out.println(e);
 		}
 		
-
 		// update topping inventory from topping t based on pizza size from pizza p
 		String update =
 		 "UPDATE Pizzeria.topping " + 
@@ -272,8 +317,8 @@ public final class DBNinja {
 		 "WHERE ToppingKey = (?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(update)) {
-			System.out.println("update inv test: ");
-			System.out.println(prevInv + " - " + toppingToRemove);
+			//System.out.println("update inv test: ");
+			//System.out.println(prevInv + " - " + toppingToRemove);
 		
 			ps.setDouble(1, (prevInv-toppingToRemove));
 			ps.setInt(2, t.getTopID());
@@ -293,7 +338,7 @@ public final class DBNinja {
          "VALUES (?, ?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertToppingPizza)) {
-			System.out.println("Insert toppingpizza test: ");
+			System.out.println("Insert toppingpizza test: " + p.getPizzaID());
 		
 			ps.setInt(1, t.getTopID());
 			ps.setInt(2, p.getPizzaID());
@@ -358,14 +403,14 @@ public final class DBNinja {
          "VALUES (?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertPizzaDiscount)) {
-            System.out.println("Insert discounpizza test: ");
+            //System.out.println("Insert discounpizza test: ");
         
             ps.setInt(1, d.getDiscountID());
             ps.setInt(2, p.getPizzaID());
             ps.executeUpdate();
         
-            System.out.println("complete discountpizza");
-            System.out.println();
+            //System.out.println("complete discountpizza");
+            //System.out.println();
     
         } catch (SQLException e) {
             System.out.println(e);
@@ -385,23 +430,46 @@ public final class DBNinja {
 		 * this information in the dabast
 		 */
 		
+		// INSERT INTO DATABASE
 		String insertOrderDiscount =
          "INSERT INTO Pizzeria.discount_order (DiscountID, OrderNum) " + 
          "VALUES (?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertOrderDiscount)) {
-            System.out.println("Insert discountorder test: ");
+            //System.out.println("Insert discountorder test: ");
         
             ps.setInt(1, d.getDiscountID());
             ps.setInt(2, o.getOrderID());
             ps.executeUpdate();
         
-            System.out.println("complete discountorder");
-            System.out.println();
+            //System.out.println("complete discountorder");
+            //System.out.println();
     
         } catch (SQLException e) {
             System.out.println(e);
         }
+
+		// UPDATE ORDER COSTS
+		o.addDiscount(d);
+		String update =
+         "UPDATE Pizzeria.order " + 
+         "SET OrderCustPrice = (?)" +
+         "WHERE OrderNum = (?)";
+ 
+        try (PreparedStatement ps = conn.prepareStatement(update)) {
+            //System.out.println("update inv test: ");
+        
+            ps.setDouble(1, o.getCustPrice());
+            ps.setInt(2, o.getOrderID());
+            ps.executeUpdate();
+        
+           // System.out.println("updated order costs: " +  o.getCustPrice());
+          //  System.out.println();
+    
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -419,7 +487,7 @@ public final class DBNinja {
 		 "VALUES (?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertCustomer)) {
-		System.out.println("Insert test: ");
+		//System.out.println("Insert test: ");
 	
 		ps.setString(1, c.getFName());
 		ps.setString(2, c.getLName());
@@ -427,8 +495,8 @@ public final class DBNinja {
 		ps.setString(4, c.getAddress());
 		ps.executeUpdate();
 	
-		System.out.println(c.toString());
-		System.out.println();
+		//System.out.println(c.toString());
+		//System.out.println();
 	
 		} catch (SQLException e) {
 		System.out.println(e);
@@ -451,7 +519,7 @@ public final class DBNinja {
          "WHERE CustomerID = (?)";
  
         try (PreparedStatement ps = conn.prepareStatement(update)) {
-            System.out.println("update customer addr test: ");
+            //System.out.println("update customer addr test: ");
         
             ps.setString(1, addr);
             ps.setInt(2, custID);
@@ -476,7 +544,7 @@ public final class DBNinja {
 
 			if (rs.next()) {
 				lastKey = rs.getInt("lastKey");
-				System.out.println("Last Key Number: " + lastKey);
+				//System.out.println("Last Key Number: " + lastKey);
 			} else {
 				System.out.println("No records in the table");
 			}
@@ -508,14 +576,14 @@ public final class DBNinja {
 		 "WHERE OrderNum = (?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(updateOrderCompletion)) {
-			System.out.println("Update order completion test: ");
+			//System.out.println("Update order completion test: ");
 		
 			ps.setInt(1, 1);
 			ps.setInt(2, o.getOrderID());
 			ps.executeUpdate();
 		
-			System.out.println("complete");
-			System.out.println();
+			//System.out.println("complete");
+			//System.out.println();
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -599,10 +667,10 @@ public final class DBNinja {
 		String orderDate;
 		try {
 			if (closed){
-				orderDate = "SELECT * FROM order WHERE OrderCompletion = 1 ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM `Pizzeria`.`order`  WHERE OrderCompletion = 1 ORDER BY OrderNum;";
 			}
 			else {
-				orderDate = "SELECT * FROM order ORDER BY OrderNum;";
+				orderDate = "SELECT * FROM `Pizzeria`.`order`  ORDER BY OrderNum;";
 			}
 			
 			PreparedStatement ready = conn.prepareStatement(orderDate);
@@ -678,7 +746,7 @@ public final class DBNinja {
 
 		try {
 
-			String orderDate = "SELECT * FROM order WHERE OrderDate = " + date + " ORDER BY OrderDate;";
+			String orderDate = "SELECT * FROM `Pizzeria`.`order`  WHERE OrderDate = " + date + " ORDER BY OrderDate;";
 			PreparedStatement ready = conn.prepareStatement(orderDate);
 			ResultSet returnQ = ready.executeQuery(orderDate);
 
@@ -719,17 +787,17 @@ public final class DBNinja {
 
 		try {
 
-			String order = "SELECT * FROM order WHERE OrderNum = " + id + ";";
+			String order = "SELECT * FROM `Pizzeria`.`order` WHERE OrderNum = " + id + ";";
 			Statement ready = conn.createStatement();
 			ResultSet returnQ = ready.executeQuery(order);
 
 			if (returnQ.next()) {
-				idOrder = new Order(returnQ.getInt(1), returnQ.getInt(2), returnQ.getString(3), returnQ.getString(4), returnQ.getDouble(5),
-				returnQ.getDouble(6), returnQ.getInt(7));
+				idOrder = new Order(returnQ.getInt(1), returnQ.getInt(8), returnQ.getString(2), returnQ.getString(4), returnQ.getDouble(6),
+				returnQ.getDouble(7), returnQ.getInt(3));
 			}
 
 		} catch (SQLException error) {
-			System.out.println("Error getting customer name");
+			System.out.println("Error getting order by id");
 			while (error != null) {
 				System.out.println("Message     : " + error.getMessage());
 				error = error.getNextException();
@@ -739,6 +807,8 @@ public final class DBNinja {
 		conn.close();
 		return idOrder;
 	}
+
+	
 
 
 		
