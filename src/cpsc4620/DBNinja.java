@@ -73,31 +73,34 @@ public final class DBNinja {
 
 		// order table
 		String insertOrder =
-		 "INSERT INTO Pizzeria.order (OrderType, OrderCompletion, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID) " + 
+		 "INSERT INTO `order` (OrderType, OrderCompletion, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID) " + 
 		 "VALUES (?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertOrder)) {
 	
-		ps.setString(1, o.getOrderType());
-		ps.setInt(2, o.getIsComplete());
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			java.util.Date utilDate = sdf.parse(o.getDate());
-			java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-			ps.setDate(3, sqlDate);
+			ps.setString(1, o.getOrderType());
+			ps.setInt(2, o.getIsComplete());
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				java.util.Date utilDate = sdf.parse(o.getDate());
+				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+				ps.setDate(3, sqlDate);
 		} catch (ParseException e) {
             e.printStackTrace();
         }
-		ps.setDouble(4, o.getBusPrice());
-		ps.setDouble(5, o.getCustPrice());
-		if(o.getCustID() != 0) 
-			ps.setDouble(6, o.getCustID());
-		else
-			ps.setNull(6, Types.NULL);
-		ps.executeUpdate();
-	
+			ps.setDouble(4, o.getBusPrice());
+			ps.setDouble(5, o.getCustPrice());
+			if(o.getCustID() != 0) 
+				ps.setDouble(6, o.getCustID());
+			else
+				ps.setNull(6, Types.NULL);
+
+			ps.executeUpdate();
+
+			System.out.println("test order " + o.toSimplePrint());
+		
 		} catch (SQLException e) {
-		System.out.println(e);
+			System.out.println(e);
 		}
 
 
@@ -106,14 +109,18 @@ public final class DBNinja {
 		// update dine in table
 		if(Objects.equals(o.getOrderType(), dine_in)) {
 			insertOrderType =
-			"INSERT INTO Pizzeria.dinein (OrderNum, TableNum) " + 
+			"INSERT INTO  dinein (OrderNum, TableNum) " + 
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
 
+			System.out.println("test: " + o.getOrderID() + " " + Menu.getTableNum()); // TEST
+
 			ps.setInt(1, o.getOrderID());
 			ps.setInt(2, Menu.getTableNum());
 			ps.executeUpdate();
+
+			
 
 
 			} catch (SQLException e) {
@@ -123,7 +130,7 @@ public final class DBNinja {
 		// update pickup table
 		if(Objects.equals(o.getOrderType(), pickup)) {
 			insertOrderType =
-			"INSERT INTO Pizzeria.pickup (OrderNum, CustomerID) " + 
+			"INSERT INTO  pickup (OrderNum, CustomerID) " + 
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
@@ -139,7 +146,7 @@ public final class DBNinja {
 		// update delivery table
 		if(Objects.equals(o.getOrderType(), delivery )) {
 			insertOrderType =
-			"INSERT INTO Pizzeria.delivery (OrderNum, CustomerID) " + 
+			"INSERT INTO  delivery (OrderNum, CustomerID) " + 
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
@@ -168,7 +175,7 @@ public final class DBNinja {
 		 */
 		
 		String insertPizza =
-		 "INSERT INTO Pizzeria.pizza (PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
+		 "INSERT INTO  pizza (PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, PizzaDate, OrderNum) " + 
 		 "VALUES (?, ?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
@@ -264,7 +271,7 @@ public final class DBNinja {
 
 		// get current topping inv
 		double prevInv = 0;
-		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
+		String getToppingInv = "SELECT ToppingInv FROM  topping WHERE ToppingKey = (?)";
 		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {		
 			ps.setInt(1, t.getTopID());
 			
@@ -284,7 +291,7 @@ public final class DBNinja {
 		
 		// update topping inventory from topping t based on pizza size from pizza p
 		String update =
-		 "UPDATE Pizzeria.topping " + 
+		 "UPDATE  topping " + 
 		 "SET ToppingInv = (?)" +
 		 "WHERE ToppingKey = (?)";
  
@@ -300,7 +307,7 @@ public final class DBNinja {
 		
 		// insert topping_pizza table withj pizzaID and toppingKey
 		String insertToppingPizza =
-         "INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra) " + 
+         "INSERT INTO  topping_pizza (ToppingKey, PizzaID, ToppingExtra) " + 
          "VALUES (?, ?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertToppingPizza)) {		
@@ -359,7 +366,7 @@ public final class DBNinja {
 		
 		// insert pizza and discount into pizza_discount bridge table
 		String insertPizzaDiscount =
-         "INSERT INTO Pizzeria.discount_pizza (DiscountID, PizzaID) " + 
+         "INSERT INTO  discount_pizza (DiscountID, PizzaID) " + 
          "VALUES (?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertPizzaDiscount)) {
@@ -388,7 +395,7 @@ public final class DBNinja {
 		
 		// INSERT INTO DATABASE
 		String insertOrderDiscount =
-         "INSERT INTO Pizzeria.discount_order (DiscountID, OrderNum) " + 
+         "INSERT INTO  discount_order (DiscountID, OrderNum) " + 
          "VALUES (?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertOrderDiscount)) {
@@ -405,7 +412,7 @@ public final class DBNinja {
 		// UPDATE ORDER COSTS
 		o.addDiscount(d);
 		String update =
-         "UPDATE Pizzeria.order " + 
+         "UPDATE  `order` " + 
          "SET OrderCustPrice = (?)" +
          "WHERE OrderNum = (?)";
  
@@ -432,7 +439,7 @@ public final class DBNinja {
 		 */
 				
 		String insertCustomer =
-		 "INSERT INTO Pizzeria.customer (CustomerFName, CustomerLName, CustomerPhone, CustomerAddr) " + 
+		 "INSERT INTO  customer (CustomerFName, CustomerLName, CustomerPhone, CustomerAddr) " + 
 		 "VALUES (?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertCustomer)) {
@@ -459,7 +466,7 @@ public final class DBNinja {
 		 */
 
 		 String update =
-         "UPDATE Pizzeria.customer " + 
+         "UPDATE  customer " + 
          "SET CustomerAddr = (?)" +
          "WHERE CustomerID = (?)";
  
@@ -514,7 +521,7 @@ public final class DBNinja {
 		 */
 
 		String updateOrderCompletion =
-		 "UPDATE Pizzeria.order " + 
+		 "UPDATE  `order` " + 
 		 "SET OrderCompletion = (?) " +
 		 "WHERE OrderNum = (?)";
  
@@ -1003,7 +1010,7 @@ public final class DBNinja {
 		// get prev topping inv
 		double prevInv = 0;
 
-		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
+		String getToppingInv = "SELECT ToppingInv FROM  topping WHERE ToppingKey = (?)";
 		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {		
 			ps.setInt(1, t.getTopID());
 			
@@ -1023,7 +1030,7 @@ public final class DBNinja {
 
 		// update topping
 		String updateToppingQty =
-		 "UPDATE Pizzeria.topping " + 
+		 "UPDATE  topping " + 
 		 "SET ToppingInv = (?) + (?) " +
 		 "WHERE ToppingKey = (?)";
  
@@ -1121,7 +1128,7 @@ public final class DBNinja {
 		 * 
 		 */
 
-		String selectInv = "SELECT ToppingKey, ToppingName, ToppingInv FROM Pizzeria.topping ORDER BY ToppingKey ASC";
+		String selectInv = "SELECT ToppingKey, ToppingName, ToppingInv FROM  topping ORDER BY ToppingKey ASC";
 		try (PreparedStatement ps = conn.prepareStatement(selectInv)) {
 			try (ResultSet rs = ps.executeQuery()) {
 				// get columns
