@@ -116,9 +116,6 @@ public final class DBNinja {
 			ps.setInt(2, Menu.getTableNum());
 			ps.executeUpdate();
 
-			
-
-
 			} catch (SQLException e) {
 			System.out.println(e);
 			}
@@ -689,7 +686,7 @@ public final class DBNinja {
 
 		try {
 
-			String orderDate = "SELECT * FROM `order` WHERE OrderDate = " + date + " ORDER BY OrderDate;";
+			String orderDate = "SELECT * FROM `order` WHERE OrderDate >= " + date + " ORDER BY OrderDate;";
 			PreparedStatement ready = conn.prepareStatement(orderDate);
 			ResultSet returnQ = ready.executeQuery(orderDate);
 

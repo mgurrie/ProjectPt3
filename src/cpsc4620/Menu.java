@@ -216,7 +216,7 @@ public class Menu {
 		
 		// ADDING ORDER TO DATABASE
 		Order o = new Order(newOrderID, custID, orderType, strDate, custPrice, busPrice, iscomplete);
-		System.out.println(o.toSimplePrint()); //TEST
+		// System.out.println(o.toSimplePrint()); //TEST
 		DBNinja.addOrder(o);
 
 
