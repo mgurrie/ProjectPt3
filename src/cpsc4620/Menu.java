@@ -216,7 +216,7 @@ public class Menu {
 		
 		// ADDING ORDER TO DATABASE
 		Order o = new Order(newOrderID, custID, orderType, strDate, custPrice, busPrice, iscomplete);
-		System.out.println(o.toSimplePrint()); //TEST
+		// System.out.println(o.toSimplePrint()); //TEST
 		DBNinja.addOrder(o);
 
 
@@ -413,8 +413,9 @@ public class Menu {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
 
-		if (DBNinja.getOrders(true) == null ) {
+		if (DBNinja.getOrders(true).size() == 0) {
 			System.out.println("There are no open orders currently... returning to menu...");
+			return;
 		}
 		else{
 			DBNinja.getOrders(true).forEach(System.out::println); 

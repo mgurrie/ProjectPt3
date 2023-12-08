@@ -116,9 +116,6 @@ public final class DBNinja {
 			ps.setInt(2, Menu.getTableNum());
 			ps.executeUpdate();
 
-			
-
-
 			} catch (SQLException e) {
 			System.out.println(e);
 			}
