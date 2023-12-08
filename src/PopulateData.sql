@@ -86,13 +86,13 @@ VALUES ('Gameday Special', NULL, 20);
 
 
 INSERT INTO `Pizzeria`.`customer` (`CustomerID`, `CustomerFName`, `CustomerLName`, `CustomerPhone`, `CustomerAddr`) 
-VALUES (102, 'Andrew ', 'Wilkes-Krier', '864-254-5861', '115 Party Blvd, Anderson SC 29621');
+VALUES (2, 'Andrew ', 'Wilkes-Krier', '864-254-5861', '115 Party Blvd, Anderson SC 29621');
 INSERT INTO `Pizzeria`.`customer` (`CustomerID`, `CustomerFName`, `CustomerLName`, `CustomerPhone`, `CustomerAddr`) 
-VALUES (103, 'Matt', 'Engers', '864-474-9953', NULL);
+VALUES (3, 'Matt', 'Engers', '864-474-9953', NULL);
 INSERT INTO `Pizzeria`.`customer` (`CustomerID`, `CustomerFName`, `CustomerLName`, `CustomerPhone`, `CustomerAddr`) 
-VALUES (104, 'Frank', 'Turner', '864-232-8944', '6745 Wessex St Anderson SC 29621');
+VALUES (4, 'Frank', 'Turner', '864-232-8944', '6745 Wessex St Anderson SC 29621');
 INSERT INTO `Pizzeria`.`customer` (`CustomerID`, `CustomerFName`, `CustomerLName`, `CustomerPhone`, `CustomerAddr`) 
-VALUES (105, 'Milo', 'Auckerman', '864-878-5679', '8879 Suburban Home, Anderson, SC 29621');
+VALUES (5, 'Milo', 'Auckerman', '864-878-5679', '8879 Suburban Home, Anderson, SC 29621');
 
 
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
@@ -100,15 +100,15 @@ VALUES ('dinein', 1, '12:03', '2023-03-05', 3.68, 20.75, NULL);
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
 VALUES ('dinein', 1, '12:05', '2023-04-03', 4.63,19.78,	NULL);
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
-VALUES ('pickup', 1, '21:30', '2023-03-03', 19.8, 89.28, 102);
+VALUES ('pickup', 1, '21:30', '2023-03-03', 19.8, 89.28, 2);
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
-VALUES ('delivery', 1, '19:11', '2023-04-20', 23.62, 86.19, 102);
+VALUES ('delivery', 1, '19:11', '2023-04-20', 23.62, 86.19, 2);
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
-VALUES ('pickup', 1, '17:30', '2023-03-02', 7.88, 27.45, 103);
+VALUES ('pickup', 1, '17:30', '2023-03-02', 7.88, 27.45, 3);
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
-VALUES ('delivery', 1, '18:17', '2023-03-02', 4.24, 25.81, 104);
+VALUES ('delivery', 1, '18:17', '2023-03-02', 4.24, 25.81, 4);
 INSERT INTO Pizzeria.`order` (OrderType, OrderCompletion, OrderTime, OrderDate, OrderBusinessCost, OrderCustPrice, CustomerID)
-VALUES ('delivery', 1, '20:32', '2023-04-13', 6, 37.25, 105);
+VALUES ('delivery', 1, '20:32', '2023-04-13', 6, 37.25, 5);
 
 
 INSERT INTO Pizzeria.pizza (PizzaSize, PizzaState, PizzaPrice, PizzaCost, PizzaCrust, OrderNum)
@@ -149,13 +149,13 @@ INSERT INTO `Pizzeria`.`dinein` (`OrderNum`, `TableNum`) VALUES ('1', '21');
 INSERT INTO `Pizzeria`.`dinein` (`OrderNum`, `TableNum`) VALUES ('2', '4');
 
 
-INSERT INTO `Pizzeria`.`delivery` (`OrderNum`, `CustomerID`) VALUES ('4', '102');
-INSERT INTO `Pizzeria`.`delivery` (`OrderNum`, `CustomerID`) VALUES ('6', '104');
-INSERT INTO `Pizzeria`.`delivery` (`OrderNum`, `CustomerID`) VALUES ('7', '105');
+INSERT INTO `Pizzeria`.`delivery` (`OrderNum`, `CustomerID`) VALUES ('4', '2');
+INSERT INTO `Pizzeria`.`delivery` (`OrderNum`, `CustomerID`) VALUES ('6', '4');
+INSERT INTO `Pizzeria`.`delivery` (`OrderNum`, `CustomerID`) VALUES ('7', '5');
 
 
-INSERT INTO `Pizzeria`.`pickup` (`OrderNum`, `CustomerID`) VALUES ('3', '102');
-INSERT INTO `Pizzeria`.`pickup` (`OrderNum`, `CustomerID`) VALUES ('5', '103');
+INSERT INTO `Pizzeria`.`pickup` (`OrderNum`, `CustomerID`) VALUES ('3', '2');
+INSERT INTO `Pizzeria`.`pickup` (`OrderNum`, `CustomerID`) VALUES ('5', '3');
 
 
 INSERT INTO `Pizzeria`.`discount_order` (`DiscountID`, `OrderNum`) VALUES ('3', '1');
@@ -167,105 +167,105 @@ INSERT INTO `Pizzeria`.`discount_order` (`DiscountID`, `OrderNum`) VALUES ('4', 
 INSERT INTO `Pizzeria`.`discount_order` (`DiscountID`, `OrderNum`) VALUES ('1', '7');
 
 
-INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('3', '1000');
-INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('2', 1001);
-INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('4', 1001);
-INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('4', 1010);
-INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('4', 1012);
+INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('3', '1');
+INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('2', 2);
+INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('4', 2);
+INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('4', 11);
+INSERT INTO `Pizzeria`.`discount_pizza` (`DiscountID`, `PizzaID`) VALUES ('4', 13);
 
 
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1000, 1);
+VALUES (13, 1, 1);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1000, 0);
+VALUES (1, 1, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (2, 1000, 0);
+VALUES (2, 1, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (15, 1001, 0);
+VALUES (15, 2, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (9, 1001, 0);
+VALUES (9, 2, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (7, 1001, 0);
+VALUES (7, 2, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (8, 1001, 0);
+VALUES (8, 2, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (12, 1001, 0);
+VALUES (12, 2, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1002, 0);
+VALUES (13, 3, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (12, 1002, 0);
+VALUES (12, 3, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (4, 1002, 0);
+VALUES (4, 3, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1003, 0);
+VALUES (13, 4, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1004, 0);
+VALUES (13, 5, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1005, 0);
+VALUES (13, 6, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1006, 0);
+VALUES (13, 7, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1007, 0);
+VALUES (13, 8, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1008, 0);
+VALUES (13, 9, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1003, 0);
+VALUES (1, 4, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1004, 0);
+VALUES (1, 5, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1005, 0);
+VALUES (1, 6, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1006, 0);
+VALUES (1, 7, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1007, 0);
+VALUES (1, 8, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1008, 0);
+VALUES (1, 9, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (14, 1009, 0);
+VALUES (14, 10, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1009, 0);
+VALUES (1, 10, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (2, 1009, 0);
+VALUES (2, 10, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (14, 1010, 0);
+VALUES (14, 11, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (10, 1010, 1);
+VALUES (10, 11, 1);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (3, 1010, 1);
+VALUES (3, 11, 1);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (14, 1011, 0);
+VALUES (14, 12, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (17, 1011, 0);
+VALUES (17, 12, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (4, 1011, 0);
+VALUES (4, 12, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (5, 1012, 0);
+VALUES (5, 13, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (6, 1012, 0);
+VALUES (6, 13, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (7, 1012, 0);
+VALUES (7, 13, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (8, 1012, 0);
+VALUES (8, 13, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (9, 1012, 0);
+VALUES (9, 13, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (16, 1012, 0);
+VALUES (16, 13, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (4, 1013, 0);
+VALUES (4, 14, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (5, 1013, 0);
+VALUES (5, 14, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (6, 1013, 0);
+VALUES (6, 14, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (8, 1013, 0);
+VALUES (8, 14, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (14, 1013, 1);
+VALUES (14, 14, 1);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (14, 1014, 1);
+VALUES (14, 15, 1);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (13, 1015, 0);
+VALUES (13, 16, 0);
 INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra)
-VALUES (1, 1015, 1);
+VALUES (1, 16, 1);
 
 
 

@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.omg.CORBA.INTERNAL;
+//import org.omg.CORBA.INTERNAL;
 
 /*
  * This file is where most of your code changes will occur You will write the code to retrieve
@@ -77,7 +77,6 @@ public final class DBNinja {
 		 "VALUES (?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertOrder)) {
-		//System.out.println("Insert test: ");
 	
 		ps.setString(1, o.getOrderType());
 		ps.setInt(2, o.getIsComplete());
@@ -87,7 +86,6 @@ public final class DBNinja {
 			java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 			ps.setDate(3, sqlDate);
 		} catch (ParseException e) {
-            // Handle the exception if the string is not in the expected format
             e.printStackTrace();
         }
 		ps.setDouble(4, o.getBusPrice());
@@ -97,9 +95,6 @@ public final class DBNinja {
 		else
 			ps.setNull(6, Types.NULL);
 		ps.executeUpdate();
-	
-		//System.out.println("success order\n");
-		//System.out.println();
 	
 		} catch (SQLException e) {
 		System.out.println(e);
@@ -115,13 +110,11 @@ public final class DBNinja {
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
-			System.out.println(insertOrderType);
 
 			ps.setInt(1, o.getOrderID());
 			ps.setInt(2, Menu.getTableNum());
 			ps.executeUpdate();
 
-			System.out.println(Objects.equals(o.getOrderType(), "dinein"));
 
 			} catch (SQLException e) {
 			System.out.println(e);
@@ -134,13 +127,10 @@ public final class DBNinja {
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
-			System.out.println(insertOrderType);
 
 			ps.setInt(1, o.getOrderID());
 			ps.setInt(2, o.getCustID());
 			ps.executeUpdate();
-
-			System.out.println(Objects.equals(o.getOrderType(), "pickup"));
 
 			} catch (SQLException e) {
 			System.out.println(e);
@@ -153,13 +143,10 @@ public final class DBNinja {
 			"VALUES (?, ?)";
 
 			try (PreparedStatement ps = conn.prepareStatement(insertOrderType)) {
-			System.out.println(insertOrderType);
 
 			ps.setInt(1, o.getOrderID());
 			ps.setInt(2, o.getCustID());
 			ps.executeUpdate();
-
-			System.out.println(Objects.equals(o.getOrderType(), "delivery"));
 
 			} catch (SQLException e) {
 			System.out.println(e);
@@ -185,7 +172,6 @@ public final class DBNinja {
 		 "VALUES (?, ?, ?, ?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertPizza)) {
-			//System.out.println("Insert test: ");
 		
 			ps.setString(1, p.getSize());
 			ps.setString(2, p.getPizzaState());
@@ -195,9 +181,6 @@ public final class DBNinja {
 			ps.setString(6, p.getPizzaDate());
 			ps.setInt(7, p.getOrderID());
 			ps.executeUpdate();
-		
-			System.out.println(p.toString());
-			System.out.println();
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -236,9 +219,6 @@ public final class DBNinja {
             ps.setDouble(2, newOrderBusCost);
             ps.setInt(3, p.getOrderID());
             ps.executeUpdate();
-        
-            System.out.println("updated order costs: " + newOrderCustPrice + " " + newOrderBusCost);
-            System.out.println();
     
         } catch (SQLException e) {
             System.out.println(e);
@@ -285,9 +265,7 @@ public final class DBNinja {
 		// get current topping inv
 		double prevInv = 0;
 		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
-		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {
-			//System.out.println("Get ToppingInv test: ");
-		
+		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {		
 			ps.setInt(1, t.getTopID());
 			
 			try (ResultSet rs = ps.executeQuery()) {
@@ -295,16 +273,10 @@ public final class DBNinja {
                 if (rs.next()) {
                     // Retrieve the value from the result set
                     prevInv = rs.getDouble("ToppingInv");
-
-                    // Use the retrieved value
-                    System.out.println("Retrieved value: " + prevInv);
                 } else {
                     System.out.println("No matching records found.");
                 }
             }
-		
-			System.out.println("complete");
-			System.out.println();
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -317,15 +289,9 @@ public final class DBNinja {
 		 "WHERE ToppingKey = (?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(update)) {
-			//System.out.println("update inv test: ");
-			//System.out.println(prevInv + " - " + toppingToRemove);
-		
 			ps.setDouble(1, (prevInv-toppingToRemove));
 			ps.setInt(2, t.getTopID());
 			ps.executeUpdate();
-		
-			System.out.println(t.toString());
-			System.out.println();
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -337,16 +303,11 @@ public final class DBNinja {
          "INSERT INTO Pizzeria.topping_pizza (ToppingKey, PizzaID, ToppingExtra) " + 
          "VALUES (?, ?, ?)";
  
-        try (PreparedStatement ps = conn.prepareStatement(insertToppingPizza)) {
-			System.out.println("Insert toppingpizza test: " + p.getPizzaID());
-		
+        try (PreparedStatement ps = conn.prepareStatement(insertToppingPizza)) {		
 			ps.setInt(1, t.getTopID());
 			ps.setInt(2, p.getPizzaID());
 			ps.setInt(3, extraTopping);
 			ps.executeUpdate();
-		
-			System.out.println("complete toppingpizza " + extraTopping);
-			System.out.println();
     
         } catch (SQLException e) {
         	System.out.println(e);
@@ -368,9 +329,8 @@ public final class DBNinja {
 
 			if (rs.next()) {
 				lastKey = rs.getInt("lastKey");
-				System.out.println("Last Key Number: " + lastKey);
 			} else {
-				System.out.println("No records in the table");
+				System.out.println("No records of key in the table");
 			}
 
 		} catch (SQLException error) {
@@ -403,14 +363,10 @@ public final class DBNinja {
          "VALUES (?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertPizzaDiscount)) {
-            //System.out.println("Insert discounpizza test: ");
         
             ps.setInt(1, d.getDiscountID());
             ps.setInt(2, p.getPizzaID());
             ps.executeUpdate();
-        
-            //System.out.println("complete discountpizza");
-            //System.out.println();
     
         } catch (SQLException e) {
             System.out.println(e);
@@ -436,14 +392,11 @@ public final class DBNinja {
          "VALUES (?, ?)";
  
         try (PreparedStatement ps = conn.prepareStatement(insertOrderDiscount)) {
-            //System.out.println("Insert discountorder test: ");
         
             ps.setInt(1, d.getDiscountID());
             ps.setInt(2, o.getOrderID());
             ps.executeUpdate();
-        
-            //System.out.println("complete discountorder");
-            //System.out.println();
+
     
         } catch (SQLException e) {
             System.out.println(e);
@@ -457,14 +410,10 @@ public final class DBNinja {
          "WHERE OrderNum = (?)";
  
         try (PreparedStatement ps = conn.prepareStatement(update)) {
-            //System.out.println("update inv test: ");
         
             ps.setDouble(1, o.getCustPrice());
             ps.setInt(2, o.getOrderID());
             ps.executeUpdate();
-        
-           // System.out.println("updated order costs: " +  o.getCustPrice());
-          //  System.out.println();
     
         } catch (SQLException e) {
             System.out.println(e);
@@ -487,16 +436,12 @@ public final class DBNinja {
 		 "VALUES (?, ?, ?, ?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(insertCustomer)) {
-		//System.out.println("Insert test: ");
 	
 		ps.setString(1, c.getFName());
 		ps.setString(2, c.getLName());
 		ps.setString(3, c.getPhone());
 		ps.setString(4, c.getAddress());
 		ps.executeUpdate();
-	
-		//System.out.println(c.toString());
-		//System.out.println();
 	
 		} catch (SQLException e) {
 		System.out.println(e);
@@ -519,7 +464,6 @@ public final class DBNinja {
          "WHERE CustomerID = (?)";
  
         try (PreparedStatement ps = conn.prepareStatement(update)) {
-            //System.out.println("update customer addr test: ");
         
             ps.setString(1, addr);
             ps.setInt(2, custID);
@@ -544,7 +488,6 @@ public final class DBNinja {
 
 			if (rs.next()) {
 				lastKey = rs.getInt("lastKey");
-				//System.out.println("Last Key Number: " + lastKey);
 			} else {
 				System.out.println("No records in the table");
 			}
@@ -576,14 +519,11 @@ public final class DBNinja {
 		 "WHERE OrderNum = (?)";
  
 		try (PreparedStatement ps = conn.prepareStatement(updateOrderCompletion)) {
-			//System.out.println("Update order completion test: ");
 		
 			ps.setInt(1, 1);
 			ps.setInt(2, o.getOrderID());
 			ps.executeUpdate();
-		
-			//System.out.println("complete");
-			//System.out.println();
+
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -913,7 +853,6 @@ public final class DBNinja {
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		// System.out.println(customer);
 		return customer;
 	}
 
@@ -1065,9 +1004,7 @@ public final class DBNinja {
 		double prevInv = 0;
 
 		String getToppingInv = "SELECT ToppingInv FROM Pizzeria.topping WHERE ToppingKey = (?)";
-		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {
-			System.out.println("Get ToppingInv test: ");
-		
+		try (PreparedStatement ps = conn.prepareStatement(getToppingInv)) {		
 			ps.setInt(1, t.getTopID());
 			
 			try (ResultSet rs = ps.executeQuery()) {
@@ -1075,16 +1012,10 @@ public final class DBNinja {
                 if (rs.next()) {
                     // Retrieve the value from the result set
                     prevInv = rs.getDouble("ToppingInv");
-
-                    // Use the retrieved value
-                    System.out.println("Retrieved value: " + prevInv);
                 } else {
                     System.out.println("No matching records found.");
                 }
             }
-		
-			System.out.println("complete");
-			System.out.println();
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -1096,16 +1027,11 @@ public final class DBNinja {
 		 "SET ToppingInv = (?) + (?) " +
 		 "WHERE ToppingKey = (?)";
  
-		try (PreparedStatement ps = conn.prepareStatement(updateToppingQty)) {
-			System.out.println("Update test: ");
-		
+		try (PreparedStatement ps = conn.prepareStatement(updateToppingQty)) {		
 			ps.setDouble(1, quantity);
 			ps.setDouble(2, prevInv);
 			ps.setInt(3, t.getTopID());
 			ps.executeUpdate();
-		
-			System.out.println("complete");
-			System.out.println();
 	
 		} catch (SQLException e) {
 			System.out.println(e);
@@ -1148,7 +1074,6 @@ public final class DBNinja {
 
 		//DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		System.out.println(basePrice);
 		return basePrice;
 	}
 
