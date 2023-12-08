@@ -71,9 +71,6 @@ public class Menu {
 			case 8:// view reports
 				PrintReports();
 				break;
-			case 10: // TESTER (DELETE AT END)
-				autograder_compilation_check();
-				break;
 			}
 			PrintMenu();
 			option = reader.readLine();
@@ -191,25 +188,25 @@ public class Menu {
 				custID = DBNinja.getLastCustomerID() + 1;
 				if(orderType.equals(DBNinja.pickup) || orderType.equals(DBNinja.delivery)) {
 					EnterCustomer();
-
-					// delivery add address to customer database
-					if(orderType.equals(DBNinja.delivery)) {
-						String houseNum, street, city, state, zip;
-						System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
-						houseNum = reader.readLine();
-						System.out.println("What is the Street for this order? (e.g., Smile Street)");
-						street = reader.readLine();
-						System.out.println("What is the City for this order? (e.g., Greenville)");
-						city = reader.readLine();
-						System.out.println("What is the State for this order? (e.g., SC)");
-						state = reader.readLine();
-						System.out.println("What is the Zip Code for this order? (e.g., 20605)");
-						zip = reader.readLine();
-						String addr = houseNum + " " + street + "/n" + city + "/n" + state + "/n" + zip;
-						
-						DBNinja.updateCustomerAddr(custID, addr);
-					}
 				}
+			}
+
+			// delivery add address to customer database
+			if(orderType.equals(DBNinja.delivery)) {
+				String houseNum, street, city, state, zip;
+				System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+				houseNum = reader.readLine();
+				System.out.println("What is the Street for this order? (e.g., Smile Street)");
+				street = reader.readLine();
+				System.out.println("What is the City for this order? (e.g., Greenville)");
+				city = reader.readLine();
+				System.out.println("What is the State for this order? (e.g., SC)");
+				state = reader.readLine();
+				System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+				zip = reader.readLine();
+				String addr = houseNum + " " + street + "/n" + city + "/n" + state + "/n" + zip;
+				
+				DBNinja.updateCustomerAddr(custID, addr);
 			}
 		}
 
@@ -411,8 +408,7 @@ public class Menu {
 		 * 
 		 */
 		int id;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		
+		// BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 		if (DBNinja.getOrders(true).size() == 0) {
 			System.out.println("There are no open orders currently... returning to menu...");
@@ -462,7 +458,7 @@ public class Menu {
 		 * This should print the current inventory and then ask the user which topping (by ID) they want to add more to and how much to add
 		 */
 		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		// BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		int topingOption = 0;
 		int addUnits = 0;
 
@@ -661,13 +657,13 @@ public class Menu {
 
 		// DISCOUNTS
 		ArrayList<Discount> currentDiscounts = DBNinja.getDiscountList();
-		ArrayList <Discount> thisDiscount = new ArrayList<>();
+		//ArrayList <Discount> thisDiscount = new ArrayList<>();
 
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		// get user input
 		String stringUserInput = reader.readLine();
 		if(stringUserInput.equals("y")) {
-			int j = 0;
+			//int j = 0;
 			do {
 				System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				// display discounts
@@ -680,9 +676,9 @@ public class Menu {
 				if (userInput == -1) break;
 
 				// add discount to pizza object
-				thisDiscount.add(currentDiscounts.get(userInput-1));
-				ret.addDiscounts(thisDiscount.get(j));
-				j++;
+				//thisDiscount.add(currentDiscounts.get(userInput-1));
+				ret.addDiscounts(currentDiscounts.get(userInput-1));
+				//j++;
 		
 				System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
 				stringUserInput = reader.readLine();
@@ -702,7 +698,7 @@ public class Menu {
 		 * This method asks the use which report they want to see and calls the DBNinja method to print the appropriate report.
 		 * 
 		 */
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		// BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
 		String reportOption = reader.readLine();
 		if (!reportOption.equals("a") && !reportOption.equals("b") && !reportOption.equals("c")) {
