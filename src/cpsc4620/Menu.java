@@ -304,7 +304,7 @@ public class Menu {
 		* 
 		*/ 
 		int id;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		//BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		String orderOption = reader.readLine();
 		if (!orderOption.equals("a") && !orderOption.equals("b") && !orderOption.equals("c") && !orderOption.equals("d")) {
@@ -330,6 +330,7 @@ public class Menu {
 			}
 		}
 		if (orderOption.equals("b")){
+			//System.out.println("number of orders " + DBNinja.getOrders(true).size());
 			if (DBNinja.getOrders(true).size() == 0) {
 				System.out.println("No orders to display, returning to menu.");
 				return;
