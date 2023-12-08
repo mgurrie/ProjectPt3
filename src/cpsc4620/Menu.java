@@ -665,12 +665,13 @@ public class Menu {
 		if(stringUserInput.equals("y")) {
 			//int j = 0;
 			do {
-				System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				// display discounts
 				for (int l=0; l<currentDiscounts.size(); l++) {
 					Discount current = currentDiscounts.get(l);
 					System.out.println(current.toString());
 				}
+				System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+
 				// get user input
 				userInput = Integer.parseInt(reader.readLine());
 				if (userInput == -1) break;
@@ -679,10 +680,6 @@ public class Menu {
 				//thisDiscount.add(currentDiscounts.get(userInput-1));
 				ret.addDiscounts(currentDiscounts.get(userInput-1));
 				//j++;
-		
-				System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
-				stringUserInput = reader.readLine();
-				if(stringUserInput.equals("n")) break;
 
 			} while(userInput != -1 | !stringUserInput.equals("y"));
 		}
