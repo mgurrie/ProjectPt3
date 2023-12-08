@@ -413,8 +413,9 @@ public class Menu {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
 
-		if (DBNinja.getOrders(true) == null ) {
+		if (DBNinja.getOrders(true).size() == 0) {
 			System.out.println("There are no open orders currently... returning to menu...");
+			return;
 		}
 		else{
 			DBNinja.getOrders(true).forEach(System.out::println); 
